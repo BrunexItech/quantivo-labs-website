@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, MessageCircle, Users, Award, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { api } from '../api'
 
 // TypeScript interfaces
 interface FormData {
@@ -43,14 +44,19 @@ export default function Contact() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setTimeout(() => {
-      setIsSubmitting(false)
+    
+    try {
+      await api.sendContact(formData)
       setIsSubmitted(true)
       setFormData({ name: '', email: '', phone: '', product: '', message: '' })
-    }, 1500)
+    } catch (error) {
+      alert('Error sending message. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const contactInfo: ContactInfo[] = [

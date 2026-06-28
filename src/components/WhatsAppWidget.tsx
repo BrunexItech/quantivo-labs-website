@@ -55,24 +55,29 @@ const WhatsAppWidget: React.FC = () => {
     setShowBubble(false)
 
     try {
-      setTimeout(() => {
-        const replies: string[] = [
-          "Thank you for your message! Our team will get back to you shortly.",
-          "We appreciate your interest in Quantivo Labs. How else can we assist?",
-          "Great question! Let me connect you with the right person.",
-          "We're here to help! Please let us know what you need."
-        ]
-        const reply = replies[Math.floor(Math.random() * replies.length)]
-        setMessages(prev => [...prev, { text: reply, sender: 'bot' }])
-        setIsLoading(false)
-      }, 1000)
+      const response = await fetch('http://127.0.0.1:8008/chat/api/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text.trim() })
+      })
+      
+      const data = await response.json()
+      
+      if (data.response) {
+        setMessages(prev => [...prev, { text: data.response, sender: 'bot' }])
+      } else {
+        setMessages(prev => [...prev, { 
+          text: "I couldn't process that. Please try again or contact us directly.", 
+          sender: 'bot' 
+        }])
+      }
     } catch (error) {
       setMessages(prev => [...prev, { 
         text: "Error connecting. Please try again or contact us directly.", 
         sender: 'bot' 
       }])
-      setIsLoading(false)
     }
+    setIsLoading(false)
   }
 
   const handleQuickReply = (text: string): void => {
@@ -214,11 +219,9 @@ const WhatsAppWidget: React.FC = () => {
           display: flex;
           flex-direction: column;
           align-items: flex-end;
-          /* Prevent transform changes during body scroll */
           will-change: auto;
         }
 
-        /* When menu is open, keep WhatsApp stable */
         body.menu-open .whatsapp-container {
           position: fixed;
           right: 1.5rem;
