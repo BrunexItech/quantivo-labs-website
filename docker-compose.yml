@@ -57,7 +57,7 @@ services:
       dockerfile: Dockerfile
     container_name: quantivo_frontend
     ports:
-      - "8083:80"
+      - "8086:80"
     depends_on:
       - backend
     restart: always
