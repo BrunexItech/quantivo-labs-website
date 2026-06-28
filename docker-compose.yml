@@ -20,7 +20,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     container_name: quantivo_backend
     command: >
       sh -c "python manage.py migrate &&
@@ -41,7 +41,6 @@ services:
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - DJANGO_SUPERUSER_EMAIL=quantivo.itech@gmail.com
       - DJANGO_SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD}
-      # Email settings
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - EMAIL_HOST=smtp.gmail.com
@@ -55,7 +54,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     container_name: quantivo_frontend
     ports:
       - "80:80"
