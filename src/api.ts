@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://38.242.200.152:8009/api';
+export const API_BASE = import.meta.env.VITE_API_URL || 'http://38.242.200.152:8009/api';
 
 export const api = {
   // Products
