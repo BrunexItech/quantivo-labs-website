@@ -13,7 +13,13 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy knowledge_base.pdf before copying everything else
+COPY chat/knowledge_base.pdf /app/chat/knowledge_base.pdf
+
 COPY . .
+
+# Run collectstatic during build
+RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
