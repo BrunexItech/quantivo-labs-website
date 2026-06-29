@@ -406,7 +406,7 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Map Section */}
+          {/* Map Section - UPDATED LOCATION */}
           <div className="contact-premium__map">
             <div className="contact-premium__map-header">
               <MapPin size={20} />
@@ -414,7 +414,7 @@ export default function Contact() {
             </div>
             <div className="contact-premium__map-container">
               <iframe
-                src="https://www.openstreetmap.org/export/embed.html?bbox=36.8119%2C-1.3021%2C36.8319%2C-1.2821&layer=mapnik&marker=-1.2921%2C36.8219"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=36.8132%2C-1.2973%2C36.8332%2C-1.2773&layer=mapnik&marker=-1.2873%2C36.8232"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
