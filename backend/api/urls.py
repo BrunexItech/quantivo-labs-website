@@ -2,6 +2,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('products/', include('products.urls')),
+    path('categories/', include('products.urls')),  # ADD THIS LINE
     path('services/', include('services.urls')),
     path('blog/', include('blog.urls')),
     path('portfolio/', include('portfolio.urls')),
