@@ -35,7 +35,6 @@ export default function Blog() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        setLoading(true)
         const data = await api.getBlogPosts()
         const postList = data.results || data || []
         setPosts(postList)
@@ -53,50 +52,9 @@ export default function Blog() {
     ? posts.filter(p => !p.featured)
     : posts.filter(p => p.category === activeCategory && !p.featured)
 
-  if (loading) {
-    return (
-      <div className="blog-vanguard">
-        {/* Hero - Always visible */}
-        <section className="blog-vanguard__hero">
-          <div className="blog-vanguard__hero-bg">
-            <img 
-              src="https://images.unsplash.com/photo-1563986768711-b3bde3dc821e"
-              alt="Blog hero background"
-              className="blog-vanguard__hero-image"
-            />
-            <div className="blog-vanguard__hero-overlay" />
-          </div>
-        </section>
-        <div className="blog-vanguard__container" style={{ padding: '2rem 0', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.1rem', color: '#64748B' }}>Loading posts...</div>
-        </div>
-      </div>
-    )
-  }
-
-  if (posts.length === 0) {
-    return (
-      <div className="blog-vanguard">
-        <section className="blog-vanguard__hero">
-          <div className="blog-vanguard__hero-bg">
-            <img 
-              src="https://images.unsplash.com/photo-1563986768711-b3bde3dc821e"
-              alt="Blog hero background"
-              className="blog-vanguard__hero-image"
-            />
-            <div className="blog-vanguard__hero-overlay" />
-          </div>
-        </section>
-        <div className="blog-vanguard__container" style={{ padding: '2rem 0', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No blog posts found.</div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="blog-vanguard">
-      {/* Hero - Full screen image only */}
+      {/* ===== HERO - Always Visible ===== */}
       <section className="blog-vanguard__hero">
         <div className="blog-vanguard__hero-bg">
           <img 
@@ -106,163 +64,214 @@ export default function Blog() {
           />
           <div className="blog-vanguard__hero-overlay" />
         </div>
-      </section>
-
-      {/* Featured Article */}
-      {featured && (
-        <section className="blog-vanguard__featured">
-          <div className="blog-vanguard__container">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="blog-vanguard__featured-card"
-            >
-              <div className="blog-vanguard__featured-image">
-                <img src={featured.image} alt={featured.title} />
-                <div className="blog-vanguard__featured-tag">Featured</div>
-              </div>
-              <div className="blog-vanguard__featured-content">
-                <div className="blog-vanguard__featured-meta">
-                  <span 
-                    className="blog-vanguard__featured-category"
-                    style={{ background: `${featured.category_color}12`, color: featured.category_color }}
-                  >
-                    {featured.category}
-                  </span>
-                  <span className="blog-vanguard__featured-date">{featured.date}</span>
-                </div>
-                <h2 className="blog-vanguard__featured-title">{featured.title}</h2>
-                <p className="blog-vanguard__featured-excerpt">{featured.excerpt}</p>
-                <div className="blog-vanguard__featured-footer">
-                  <div className="blog-vanguard__featured-author">
-                    <div 
-                      className="blog-vanguard__featured-avatar"
-                      style={{ background: featured.category_color }}
-                    >
-                      {featured.author_avatar}
-                    </div>
-                    <div>
-                      <div className="blog-vanguard__featured-author-name">{featured.author}</div>
-                      <div className="blog-vanguard__featured-author-role">Contributor</div>
-                    </div>
-                  </div>
-                  <Link to={`/blog/${featured.slug}`} className="blog-vanguard__featured-btn">
-                    Read Article <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      )}
-
-      {/* Category Filter */}
-      <section className="blog-vanguard__filter">
-        <div className="blog-vanguard__container">
-          <div className="blog-vanguard__filter-wrap">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                className={`blog-vanguard__filter-btn ${activeCategory === cat ? 'active' : ''}`}
-                onClick={() => setActiveCategory(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Blog Grid */}
-      <section className="blog-vanguard__grid-section">
-        <div className="blog-vanguard__container">
-          <div className="blog-vanguard__grid">
-            <AnimatePresence mode="wait">
-              {filteredPosts.map((post, index) => (
-                <motion.article
-                  key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="blog-vanguard__post"
-                  onMouseEnter={() => setHoveredPost(post.id)}
-                  onMouseLeave={() => setHoveredPost(null)}
-                >
-                  <div className="blog-vanguard__post-image">
-                    <img src={post.image} alt={post.title} />
-                    <span 
-                      className="blog-vanguard__post-category"
-                      style={{ background: post.category_color }}
-                    >
-                      {post.category}
-                    </span>
-                  </div>
-                  <div className="blog-vanguard__post-content">
-                    <h3 className="blog-vanguard__post-title">{post.title}</h3>
-                    <p className="blog-vanguard__post-excerpt">{post.excerpt}</p>
-                    <div className="blog-vanguard__post-meta">
-                      <div className="blog-vanguard__post-author">
-                        <div 
-                          className="blog-vanguard__post-avatar"
-                          style={{ background: post.category_color }}
-                        >
-                          {post.author_avatar}
-                        </div>
-                        <span className="blog-vanguard__post-author-name">{post.author}</span>
-                      </div>
-                      <div className="blog-vanguard__post-stats">
-                        <span><Clock size={12} /> {post.read_time}</span>
-                        <span><Heart size={12} /> {post.likes}</span>
-                      </div>
-                    </div>
-                    <Link to={`/blog/${post.slug}`} className="blog-vanguard__post-link">
-                      Read More <ArrowRight size={14} />
-                    </Link>
-                  </div>
-                </motion.article>
-              ))}
-            </AnimatePresence>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="blog-vanguard__newsletter">
-        <div className="blog-vanguard__container">
+        {/* Hero Content - Always visible */}
+        <div className="blog-vanguard__hero-content">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="blog-vanguard__newsletter-card"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="blog-vanguard__hero-inner"
           >
-            <div className="blog-vanguard__newsletter-icon">
-              <Zap size={24} />
+            <div className="blog-vanguard__hero-badge">
+              <Sparkles size={14} />
+              <span>Insights & Perspectives</span>
             </div>
-            <h3 className="blog-vanguard__newsletter-title">Stay Ahead of the Curve</h3>
-            <p className="blog-vanguard__newsletter-desc">
-              Get our latest insights on AI, fintech, digital finance, and transformation delivered weekly.
+            <h1 className="blog-vanguard__hero-title">
+              Thoughts from the <br />
+              <span className="blog-vanguard__hero-accent">Technology Frontier</span>
+            </h1>
+            <p className="blog-vanguard__hero-desc">
+              Perspectives on AI, fintech, digital finance, healthcare IT, and the future of technology in Africa and beyond.
             </p>
-            <div className="blog-vanguard__newsletter-form">
-              <input 
-                type="email" 
-                placeholder="Enter your email address" 
-                className="blog-vanguard__newsletter-input"
-              />
-              <button className="blog-vanguard__newsletter-btn">
-                Subscribe <ArrowRight size={16} />
-              </button>
-            </div>
           </motion.div>
         </div>
       </section>
 
+      {/* ===== LOADING STATE - Only shows for content ===== */}
+      {loading ? (
+        <div className="blog-vanguard__loading">
+          <div className="blog-vanguard__container">
+            <div className="blog-vanguard__loading-grid">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="blog-vanguard__loading-card">
+                  <div className="blog-vanguard__loading-image" />
+                  <div className="blog-vanguard__loading-content">
+                    <div className="blog-vanguard__loading-line" />
+                    <div className="blog-vanguard__loading-line blog-vanguard__loading-line--short" />
+                    <div className="blog-vanguard__loading-line blog-vanguard__loading-line--medium" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : posts.length === 0 ? (
+        <div className="blog-vanguard__empty">
+          <div className="blog-vanguard__container">
+            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+              <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No blog posts found.</div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* ===== FEATURED ARTICLE ===== */}
+          {featured && (
+            <section className="blog-vanguard__featured">
+              <div className="blog-vanguard__container">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                  className="blog-vanguard__featured-card"
+                >
+                  <div className="blog-vanguard__featured-image">
+                    <img src={featured.image} alt={featured.title} />
+                    <div className="blog-vanguard__featured-tag">Featured</div>
+                  </div>
+                  <div className="blog-vanguard__featured-content">
+                    <div className="blog-vanguard__featured-meta">
+                      <span 
+                        className="blog-vanguard__featured-category"
+                        style={{ background: `${featured.category_color}12`, color: featured.category_color }}
+                      >
+                        {featured.category}
+                      </span>
+                      <span className="blog-vanguard__featured-date">{featured.date}</span>
+                    </div>
+                    <h2 className="blog-vanguard__featured-title">{featured.title}</h2>
+                    <p className="blog-vanguard__featured-excerpt">{featured.excerpt}</p>
+                    <div className="blog-vanguard__featured-footer">
+                      <div className="blog-vanguard__featured-author">
+                        <div 
+                          className="blog-vanguard__featured-avatar"
+                          style={{ background: featured.category_color }}
+                        >
+                          {featured.author_avatar}
+                        </div>
+                        <div>
+                          <div className="blog-vanguard__featured-author-name">{featured.author}</div>
+                          <div className="blog-vanguard__featured-author-role">Contributor</div>
+                        </div>
+                      </div>
+                      <Link to={`/blog/${featured.slug}`} className="blog-vanguard__featured-btn">
+                        Read Article <ArrowRight size={16} />
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </section>
+          )}
+
+          {/* ===== CATEGORY FILTER ===== */}
+          <section className="blog-vanguard__filter">
+            <div className="blog-vanguard__container">
+              <div className="blog-vanguard__filter-wrap">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    className={`blog-vanguard__filter-btn ${activeCategory === cat ? 'active' : ''}`}
+                    onClick={() => setActiveCategory(cat)}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ===== BLOG GRID ===== */}
+          <section className="blog-vanguard__grid-section">
+            <div className="blog-vanguard__container">
+              <div className="blog-vanguard__grid">
+                <AnimatePresence mode="wait">
+                  {filteredPosts.map((post, index) => (
+                    <motion.article
+                      key={post.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      className="blog-vanguard__post"
+                      onMouseEnter={() => setHoveredPost(post.id)}
+                      onMouseLeave={() => setHoveredPost(null)}
+                    >
+                      <div className="blog-vanguard__post-image">
+                        <img src={post.image} alt={post.title} />
+                        <span 
+                          className="blog-vanguard__post-category"
+                          style={{ background: post.category_color }}
+                        >
+                          {post.category}
+                        </span>
+                      </div>
+                      <div className="blog-vanguard__post-content">
+                        <h3 className="blog-vanguard__post-title">{post.title}</h3>
+                        <p className="blog-vanguard__post-excerpt">{post.excerpt}</p>
+                        <div className="blog-vanguard__post-meta">
+                          <div className="blog-vanguard__post-author">
+                            <div 
+                              className="blog-vanguard__post-avatar"
+                              style={{ background: post.category_color }}
+                            >
+                              {post.author_avatar}
+                            </div>
+                            <span className="blog-vanguard__post-author-name">{post.author}</span>
+                          </div>
+                          <div className="blog-vanguard__post-stats">
+                            <span><Clock size={12} /> {post.read_time}</span>
+                            <span><Heart size={12} /> {post.likes}</span>
+                          </div>
+                        </div>
+                        <Link to={`/blog/${post.slug}`} className="blog-vanguard__post-link">
+                          Read More <ArrowRight size={14} />
+                        </Link>
+                      </div>
+                    </motion.article>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          </section>
+
+          {/* ===== NEWSLETTER ===== */}
+          <section className="blog-vanguard__newsletter">
+            <div className="blog-vanguard__container">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="blog-vanguard__newsletter-card"
+              >
+                <div className="blog-vanguard__newsletter-icon">
+                  <Zap size={24} />
+                </div>
+                <h3 className="blog-vanguard__newsletter-title">Stay Ahead of the Curve</h3>
+                <p className="blog-vanguard__newsletter-desc">
+                  Get our latest insights on AI, fintech, digital finance, and transformation delivered weekly.
+                </p>
+                <div className="blog-vanguard__newsletter-form">
+                  <input 
+                    type="email" 
+                    placeholder="Enter your email address" 
+                    className="blog-vanguard__newsletter-input"
+                  />
+                  <button className="blog-vanguard__newsletter-btn">
+                    Subscribe <ArrowRight size={16} />
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        </>
+      )}
+
       <style>{`
         /* ============================================================
-           BLOG VANGUARD - MODERN, FRESH, UNIQUE
+           BLOG VANGUARD - FULLY RESPONSIVE WITH HERO ALWAYS VISIBLE
            ============================================================ */
 
         .blog-vanguard {
@@ -276,7 +285,10 @@ export default function Blog() {
           padding: 0 28px;
         }
 
-        /* ---- Hero Full Screen with Image Only ---- */
+        /* ============================================================
+           HERO - Always Visible
+           ============================================================ */
+
         .blog-vanguard__hero {
           position: relative;
           min-height: 100vh;
@@ -303,11 +315,128 @@ export default function Blog() {
         .blog-vanguard__hero-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.3) 50%, rgba(15, 23, 42, 0.6) 100%);
+          background: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.7) 100%);
           z-index: 1;
         }
 
-        /* ---- Featured ---- */
+        .blog-vanguard__hero-content {
+          position: relative;
+          z-index: 2;
+          width: 100%;
+          padding: 0 28px;
+        }
+
+        .blog-vanguard__hero-inner {
+          max-width: 700px;
+          margin: 0 auto;
+          text-align: center;
+        }
+
+        .blog-vanguard__hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.4rem 1.25rem;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 100px;
+          font-size: 0.7rem;
+          font-weight: 600;
+          color: #94A3B8;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          margin-bottom: 1.25rem;
+          backdrop-filter: blur(12px);
+        }
+
+        .blog-vanguard__hero-badge svg {
+          color: #FBBF24;
+        }
+
+        .blog-vanguard__hero-title {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+          font-weight: 800;
+          color: #F1F5F9;
+          line-height: 1.08;
+          letter-spacing: -0.03em;
+          margin-bottom: 1rem;
+        }
+
+        .blog-vanguard__hero-accent {
+          background: linear-gradient(135deg, #818CF8 0%, #F472B6 50%, #FBBF24 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .blog-vanguard__hero-desc {
+          font-size: 1.05rem;
+          color: #94A3B8;
+          max-width: 520px;
+          margin: 0 auto;
+          line-height: 1.7;
+        }
+
+        /* ============================================================
+           LOADING STATE
+           ============================================================ */
+
+        .blog-vanguard__loading {
+          padding: 3rem 0 4rem;
+          background: #F8FAFC;
+        }
+
+        .blog-vanguard__loading-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 2rem;
+        }
+
+        .blog-vanguard__loading-card {
+          background: #FFFFFF;
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid #E2E8F0;
+        }
+
+        .blog-vanguard__loading-image {
+          height: 180px;
+          background: #E2E8F0;
+          animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+
+        .blog-vanguard__loading-content {
+          padding: 1.25rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .blog-vanguard__loading-line {
+          height: 16px;
+          background: #E2E8F0;
+          border-radius: 4px;
+          animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+
+        .blog-vanguard__loading-line--short {
+          width: 60%;
+        }
+
+        .blog-vanguard__loading-line--medium {
+          width: 80%;
+        }
+
+        @keyframes loadingPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+
+        /* ============================================================
+           FEATURED ARTICLE
+           ============================================================ */
+
         .blog-vanguard__featured {
           padding: 3rem 0 2rem;
           background: #F8FAFC;
@@ -455,7 +584,10 @@ export default function Blog() {
           transform: translateX(4px);
         }
 
-        /* ---- Filter ---- */
+        /* ============================================================
+           FILTER
+           ============================================================ */
+
         .blog-vanguard__filter {
           padding: 2rem 0 1.5rem;
           background: #FFFFFF;
@@ -492,7 +624,10 @@ export default function Blog() {
           color: #FFFFFF;
         }
 
-        /* ---- Grid ---- */
+        /* ============================================================
+           GRID
+           ============================================================ */
+
         .blog-vanguard__grid-section {
           padding: 3rem 0 4rem;
           background: #F8FAFC;
@@ -635,7 +770,10 @@ export default function Blog() {
           color: #1D4ED8;
         }
 
-        /* ---- Newsletter ---- */
+        /* ============================================================
+           NEWSLETTER
+           ============================================================ */
+
         .blog-vanguard__newsletter {
           padding: 4rem 0;
           background: #FFFFFF;
@@ -720,7 +858,10 @@ export default function Blog() {
           transform: translateX(4px);
         }
 
-        /* ===== Responsive ===== */
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+
         @media (max-width: 1024px) {
           .blog-vanguard__featured-card {
             grid-template-columns: 1fr;
@@ -734,6 +875,9 @@ export default function Blog() {
           .blog-vanguard__hero {
             min-height: 80vh;
           }
+          .blog-vanguard__loading-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
 
         @media (max-width: 768px) {
@@ -742,6 +886,9 @@ export default function Blog() {
           }
           .blog-vanguard__hero {
             min-height: 70vh;
+          }
+          .blog-vanguard__hero-title {
+            font-size: 2rem;
           }
           .blog-vanguard__grid {
             grid-template-columns: 1fr;
@@ -756,17 +903,51 @@ export default function Blog() {
           .blog-vanguard__newsletter-card {
             padding: 2rem 1.5rem;
           }
+          .blog-vanguard__loading-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+          .blog-vanguard__loading-image {
+            height: 140px;
+          }
         }
 
         @media (max-width: 480px) {
           .blog-vanguard__hero {
             min-height: 60vh;
           }
+          .blog-vanguard__hero-title {
+            font-size: 1.6rem;
+          }
+          .blog-vanguard__hero-desc {
+            font-size: 0.9rem;
+          }
           .blog-vanguard__post-image {
             height: 140px;
           }
           .blog-vanguard__featured-image {
             min-height: 200px;
+          }
+          .blog-vanguard__loading-grid {
+            grid-template-columns: 1fr;
+          }
+          .blog-vanguard__filter-wrap {
+            gap: 0.3rem;
+          }
+          .blog-vanguard__filter-btn {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.8rem;
+          }
+          .blog-vanguard__newsletter-form {
+            flex-direction: column;
+            align-items: center;
+          }
+          .blog-vanguard__newsletter-input {
+            max-width: 100%;
+            min-width: 100%;
+          }
+          .blog-vanguard__newsletter-btn {
+            width: 100%;
+            justify-content: center;
           }
         }
       `}</style>

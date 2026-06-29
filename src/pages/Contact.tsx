@@ -86,8 +86,8 @@ export default function Contact() {
   }
 
   const contactInfo: ContactInfo[] = [
-    { icon: MapPin, label: 'Visit Us', value: 'Yaya Center, Ring Road, Nairobi, Kenya' },
-    { icon: Phone, label: 'Call Us', value: '+254 700 000 000' },
+    { icon: MapPin, label: 'Visit Us', value: 'CPF Building, Mama Ngina Street, Opposite City Hall Annex, 5th Floor, Nairobi, Kenya' },
+    { icon: Phone, label: 'Call Us', value: '+254 726339982/+254 726157375' },
     { icon: Mail, label: 'Email Us', value: 'info@quantivolabs.tech' },
   ]
 

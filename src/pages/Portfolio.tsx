@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ArrowRight, TrendingUp, CheckCircle2, Building2, 
   Users, Award, BarChart3, Clock, Zap, Target,
-  Eye, Globe, Briefcase, Layers, Rocket
+  Eye, Globe, Briefcase, Layers, Rocket, ChevronDown, ChevronUp,
+  Star, Sparkles
 } from 'lucide-react'
 
 const cases = [
@@ -138,7 +139,7 @@ export default function Portfolio() {
 
   return (
     <div className="portfolio-showcase">
-      {/* Hero - Completely Different Design */}
+      {/* Hero */}
       <section className="portfolio-showcase__hero">
         <div className="portfolio-showcase__hero-pattern" />
         <div className="portfolio-showcase__hero-shapes">
@@ -199,7 +200,7 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* Case Studies - Timeline Style with Visible Borders */}
+      {/* Case Studies */}
       <section className="portfolio-showcase__cases">
         <div className="portfolio-showcase__container">
           <div className="portfolio-showcase__cases-wrap">
@@ -226,10 +227,7 @@ export default function Portfolio() {
                   </div>
 
                   {/* Right: Content */}
-                  <div 
-                    className="portfolio-showcase__case-content"
-                    onClick={() => toggleCase(c.id)}
-                  >
+                  <div className="portfolio-showcase__case-content">
                     <div className="portfolio-showcase__case-header">
                       <div className="portfolio-showcase__case-meta">
                         <span 
@@ -293,14 +291,41 @@ export default function Portfolio() {
                               </span>
                             ))}
                           </div>
+
+                          {/* Decorative gradient line at bottom of expanded content */}
+                          <div 
+                            className="portfolio-showcase__case-expanded-line"
+                            style={{ background: `linear-gradient(90deg, ${c.tagColor}, ${c.tagColor}40, transparent)` }}
+                          />
                         </motion.div>
                       )}
                     </AnimatePresence>
 
-                    <button className="portfolio-showcase__case-toggle">
-                      <span>{isActive ? '−' : '+'}</span>
+                    {/* Improved Toggle Button */}
+                    <button 
+                      className="portfolio-showcase__case-toggle"
+                      onClick={() => toggleCase(c.id)}
+                      style={{ 
+                        background: c.tagColor,
+                        borderColor: c.tagColor
+                      }}
+                    >
+                      <span className="portfolio-showcase__case-toggle-text">
+                        {isActive ? 'Hide Details' : 'View Details'}
+                      </span>
+                      {isActive ? (
+                        <ChevronUp size={16} className="portfolio-showcase__case-toggle-icon" />
+                      ) : (
+                        <ChevronDown size={16} className="portfolio-showcase__case-toggle-icon" />
+                      )}
                     </button>
                   </div>
+
+                  {/* Decorative gradient bar on the right side of each case */}
+                  <div 
+                    className="portfolio-showcase__case-accent-bar"
+                    style={{ background: c.tagColor }}
+                  />
                 </motion.div>
               )
             })}
@@ -339,7 +364,7 @@ export default function Portfolio() {
 
       <style>{`
         /* ================================================================
-           PORTFOLIO SHOWCASE - UNIQUE HERO + VISIBLE BORDERS
+           PORTFOLIO SHOWCASE - BALANCED WITH RIGHT SIDE VISUALS
            ================================================================ */
 
         .portfolio-showcase {
@@ -353,7 +378,7 @@ export default function Portfolio() {
           padding: 0 28px;
         }
 
-        /* ---- Hero - COMPLETELY UNIQUE ---- */
+        /* ---- Hero ---- */
         .portfolio-showcase__hero {
           position: relative;
           padding: 5rem 0 4rem;
@@ -513,7 +538,7 @@ export default function Portfolio() {
           transform: translateY(-3px);
         }
 
-        /* ---- Filter ---- */
+        /* ---- Filter - IMPROVED MOBILE ---- */
         .portfolio-showcase__filter {
           padding: 1.5rem 0;
           background: #F8FAFC;
@@ -528,7 +553,7 @@ export default function Portfolio() {
         }
 
         .portfolio-showcase__filter-tag {
-          padding: 0.4rem 1.25rem;
+          padding: 0.5rem 1.25rem;
           border-radius: 100px;
           border: 1px solid #E2E8F0;
           background: #FFFFFF;
@@ -550,7 +575,7 @@ export default function Portfolio() {
           color: #FFFFFF;
         }
 
-        /* ---- Cases - WITH VISIBLE BORDERS ---- */
+        /* ---- Cases - WITH RIGHT SIDE ACCENT ---- */
         .portfolio-showcase__cases {
           padding: 3rem 0 4rem;
           background: #FFFFFF;
@@ -564,6 +589,7 @@ export default function Portfolio() {
           border-radius: 20px;
           overflow: hidden;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+          position: relative;
         }
 
         .portfolio-showcase__case {
@@ -573,12 +599,31 @@ export default function Portfolio() {
           padding: 1.5rem 2rem;
           border-bottom: 1px solid #E2E8F0;
           transition: all 0.4s ease;
-          cursor: pointer;
           background: #FFFFFF;
+          position: relative;
         }
 
         .portfolio-showcase__case:last-child {
           border-bottom: none;
+        }
+
+        /* ===== RIGHT SIDE ACCENT BAR - FILLS THE EMPTY SPACE ===== */
+        .portfolio-showcase__case-accent-bar {
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: 4px;
+          height: 100%;
+          opacity: 0.15;
+          transition: opacity 0.3s ease;
+        }
+
+        .portfolio-showcase__case:hover .portfolio-showcase__case-accent-bar {
+          opacity: 0.4;
+        }
+
+        .portfolio-showcase__case.expanded .portfolio-showcase__case-accent-bar {
+          opacity: 0.6;
         }
 
         .portfolio-showcase__case:hover {
@@ -627,7 +672,7 @@ export default function Portfolio() {
 
         .portfolio-showcase__case-content {
           position: relative;
-          padding-right: 2.5rem;
+          padding-right: 1rem;
         }
 
         .portfolio-showcase__case-header {
@@ -670,6 +715,15 @@ export default function Portfolio() {
           margin-top: 1.25rem;
           padding-top: 1.25rem;
           border-top: 1px solid #E2E8F0;
+          position: relative;
+        }
+
+        .portfolio-showcase__case-expanded-line {
+          height: 2px;
+          width: 100%;
+          margin-top: 0.75rem;
+          border-radius: 4px;
+          opacity: 0.3;
         }
 
         .portfolio-showcase__case-grid {
@@ -753,28 +807,42 @@ export default function Portfolio() {
           background: #F8FAFC;
         }
 
+        /* ================================================================
+           IMPROVED TOGGLE BUTTON
+           ================================================================ */
         .portfolio-showcase__case-toggle {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          border: 1px solid #E2E8F0;
-          background: #FFFFFF;
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1.25rem;
+          border-radius: 100px;
+          border: 2px solid;
+          color: #FFFFFF;
+          font-weight: 600;
+          font-size: 0.8rem;
           cursor: pointer;
           transition: all 0.3s ease;
-          font-size: 1rem;
-          font-weight: 600;
-          color: #64748B;
+          margin-top: 0.5rem;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         }
 
         .portfolio-showcase__case-toggle:hover {
-          border-color: #94A3B8;
-          transform: scale(1.05);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+          filter: brightness(1.05);
+        }
+
+        .portfolio-showcase__case-toggle-text {
+          font-size: 0.75rem;
+          letter-spacing: 0.02em;
+        }
+
+        .portfolio-showcase__case-toggle-icon {
+          transition: transform 0.3s ease;
+        }
+
+        .portfolio-showcase__case-toggle:hover .portfolio-showcase__case-toggle-icon {
+          transform: rotate(180deg);
         }
 
         /* ---- CTA ---- */
@@ -854,7 +922,10 @@ export default function Portfolio() {
           box-shadow: 0 20px 48px rgba(37, 99, 235, 0.3);
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+
         @media (max-width: 1024px) {
           .portfolio-showcase__case-grid {
             grid-template-columns: 1fr;
@@ -912,14 +983,25 @@ export default function Portfolio() {
             justify-content: center;
           }
           .portfolio-showcase__filter-wrap {
-            gap: 0.3rem;
+            gap: 0.4rem;
           }
           .portfolio-showcase__filter-tag {
-            font-size: 0.7rem;
-            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            padding: 0.5rem 1rem;
           }
           .portfolio-showcase__hero-shape {
             display: none;
+          }
+          .portfolio-showcase__case-toggle {
+            padding: 0.4rem 1rem;
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
+          }
+          .portfolio-showcase__case-toggle-text {
+            font-size: 0.7rem;
+          }
+          .portfolio-showcase__case-accent-bar {
+            width: 3px;
           }
         }
 
@@ -930,13 +1012,6 @@ export default function Portfolio() {
           .portfolio-showcase__hero-desc {
             font-size: 0.9rem;
           }
-          .portfolio-showcase__case-content {
-            padding-right: 0;
-          }
-          .portfolio-showcase__case-toggle {
-            position: relative;
-            margin-top: 0.5rem;
-          }
           .portfolio-showcase__case-results {
             grid-template-columns: 1fr 1fr;
           }
@@ -945,6 +1020,43 @@ export default function Portfolio() {
           }
           .portfolio-showcase__cases-wrap {
             border-radius: 12px;
+          }
+          .portfolio-showcase__filter-tag {
+            font-size: 0.7rem;
+            padding: 0.4rem 0.8rem;
+          }
+          .portfolio-showcase__filter-wrap {
+            gap: 0.3rem;
+          }
+          .portfolio-showcase__case-toggle {
+            padding: 0.35rem 0.8rem;
+            font-size: 0.65rem;
+            width: 100%;
+            justify-content: center;
+          }
+          .portfolio-showcase__case-toggle-text {
+            font-size: 0.65rem;
+          }
+          .portfolio-showcase__case-toggle-icon {
+            width: 14px;
+            height: 14px;
+          }
+          .portfolio-showcase__case-accent-bar {
+            width: 2px;
+          }
+        }
+
+        @media (max-width: 360px) {
+          .portfolio-showcase__filter-tag {
+            font-size: 0.6rem;
+            padding: 0.3rem 0.6rem;
+          }
+          .portfolio-showcase__case-results {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+          }
+          .portfolio-showcase__case-result-metric {
+            font-size: 1rem;
           }
         }
       `}</style>
