@@ -9,6 +9,17 @@ import {
 } from 'lucide-react'
 import { api } from '../api'
 
+// Define the shape your frontend expects (matches original hardcoded structure)
+interface Category {
+  id: string
+  name: string
+  emoji: string
+  color: string
+  bgColor: string
+  image: string
+  description: string
+}
+
 interface Product {
   id: number
   name: string
@@ -17,60 +28,79 @@ interface Product {
   desc: string
   features: string[]
   stack: string[]
-  category: {
-    id: number
-    name: string
-    slug: string
-    icon: string
-    color: string
-    description: string
-    image: string
-  }
-}
-
-interface Category {
-  id: number
-  name: string
-  slug: string
-  icon: string
-  color: string
-  description: string
-  image: string
+  category: string  // category name as string (matches original)
 }
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const [activePill, setActivePill] = useState<string>('all')
   const [isPillMode, setIsPillMode] = useState<boolean>(false)
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
-  // Fetch products and categories from backend
+  // Map backend category to frontend format
+  const mapCategoryToFrontend = (backendCategory: any): Category => {
+    return {
+      id: String(backendCategory.id),
+      name: backendCategory.name,
+      emoji: backendCategory.icon || '📦',
+      color: backendCategory.color || '#2563EB',
+      bgColor: `${backendCategory.color || '#2563EB'}12`, // Add transparency for bg
+      image: backendCategory.image || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',
+      description: backendCategory.description || ''
+    }
+  }
+
+  // Map backend product to frontend format
+  const mapProductToFrontend = (backendProduct: any): Product => {
+    return {
+      id: backendProduct.id,
+      name: backendProduct.name,
+      tag: backendProduct.tag || 'Product',
+      tagClass: backendProduct.tag_class || 'pill-purple',
+      desc: backendProduct.desc || backendProduct.description || '',
+      features: backendProduct.features || [],
+      stack: backendProduct.stack || [],
+      category: backendProduct.category?.name || 'Uncategorized'
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true)
+        setError(null)
+        
         const [productsData, categoriesData] = await Promise.all([
           api.getProducts(),
           api.getCategories()
         ])
         
-        const mappedProducts = (productsData.results || productsData).map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          tag: item.tag || 'Product',
-          tagClass: item.tag_class || 'pill-purple',
-          desc: item.desc || item.description || '',
-          features: item.features || [],
-          stack: item.stack || [],
-          category: item.category || { name: 'Uncategorized' }
-        }))
+        console.log('Products data from backend:', productsData)
+        console.log('Categories data from backend:', categoriesData)
+        
+        // Extract results or use the data directly
+        const productList = productsData.results || productsData || []
+        const categoryList = categoriesData.results || categoriesData || []
+        
+        // Map to frontend format
+        const mappedProducts = productList.map(mapProductToFrontend)
+        const mappedCategories = categoryList.map(mapCategoryToFrontend)
         
         setProducts(mappedProducts)
-        setCategories(categoriesData.results || categoriesData || [])
+        setCategories(mappedCategories)
+        
+        // Auto-expand first category if there are categories
+        if (mappedCategories.length > 0) {
+          setExpandedCategory(mappedCategories[0].id)
+        }
+        
       } catch (error) {
         console.error('Error fetching data:', error)
+        setError('Failed to load products. Please try again later.')
       } finally {
         setLoading(false)
       }
@@ -107,14 +137,57 @@ export default function Products() {
   }
 
   const getProductsByCategory = (categoryName: string) => {
-    return products.filter(p => p.category?.name === categoryName)
+    return products.filter(p => p.category === categoryName)
   }
 
   if (loading) {
     return (
       <div className="products-page">
         <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
-          Loading products...
+          <div style={{ fontSize: '1.2rem', color: '#64748B' }}>Loading products...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="products-page">
+        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+          <div style={{ color: '#DC2626', marginBottom: '1rem' }}>⚠️ {error}</div>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '0.5rem 1.5rem',
+              background: '#2563EB',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="products-page">
+        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+          <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No products found.</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (categories.length === 0) {
+    return (
+      <div className="products-page">
+        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+          <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No categories configured yet.</div>
         </div>
       </div>
     )
@@ -182,15 +255,15 @@ export default function Products() {
             {categories.map((category) => (
               <button
                 key={category.id}
-                className={`products-nav__pill ${activePill === String(category.id) ? 'products-nav__pill--active' : ''}`}
-                onClick={() => handlePillClick(String(category.id))}
-                style={activePill === String(category.id) ? { 
+                className={`products-nav__pill ${activePill === category.id ? 'products-nav__pill--active' : ''}`}
+                onClick={() => handlePillClick(category.id)}
+                style={activePill === category.id ? { 
                   background: category.color, 
                   color: '#FFFFFF',
                   borderColor: category.color 
                 } : {}}
               >
-                <span>{category.icon}</span>
+                <span>{category.emoji}</span>
                 {category.name}
               </button>
             ))}
@@ -203,28 +276,28 @@ export default function Products() {
         <div className="container">
           <div className="products-categories-grid">
             {categories.map((category) => {
-              const isExpanded = expandedCategory === String(category.id)
+              const isExpanded = expandedCategory === category.id
               const categoryProducts = getProductsByCategory(category.name)
               const productCount = categoryProducts.length
               
-              const shouldHide = isPillMode && activePill !== String(category.id)
+              const shouldHide = isPillMode && activePill !== category.id
 
               return (
                 <div 
                   key={category.id} 
-                  ref={(el) => (categoryRefs.current[String(category.id)] = el)}
+                  ref={(el) => (categoryRefs.current[category.id] = el)}
                   className={`products-category-card ${isExpanded ? 'products-category-card--expanded' : ''} ${shouldHide ? 'products-category-card--hidden' : ''}`}
                   style={{ '--category-color': category.color } as React.CSSProperties}
                 >
                   <div 
                     className="products-category-card__header"
-                    onClick={() => toggleCategory(String(category.id))}
+                    onClick={() => toggleCategory(category.id)}
                   >
                     <div className="products-category-card__image">
                       <img src={category.image} alt={category.name} />
                       <div className="products-category-card__overlay" style={{ background: `linear-gradient(135deg, ${category.color}cc, ${category.color}66)` }} />
                       <div className="products-category-card__badge">
-                        <span className="products-category-card__emoji">{category.icon}</span>
+                        <span className="products-category-card__emoji">{category.emoji}</span>
                         <span className="products-category-card__count">{productCount} products</span>
                       </div>
                     </div>
@@ -282,6 +355,7 @@ export default function Products() {
         </div>
       </section>
 
+      {/* ===== STYLES - EXACTLY AS ORIGINAL ===== */}
       <style>{`
         /* ============================================================
            PRODUCTS PAGE - CATEGORY BASED

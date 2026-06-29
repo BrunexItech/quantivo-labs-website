@@ -1,17 +1,80 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import { products, categoryColors, type Product } from '../data/products'
+import * as LucideIcons from 'lucide-react'
+import { categoryColors } from '../data/products'
+import { api } from '../api'
+
+interface Product {
+  id: number
+  name: string
+  category: string
+  icon: any
+  description: string
+  featured: boolean
+  stat: string
+}
 
 export default function ProductsShowcase() {
-  const featuredProducts: Product[] = products.filter(p => p.featured)
-  const [activeProduct, setActiveProduct] = useState<Product>(featuredProducts[0])
+  const [products, setProducts] = useState<Product[]>([])
+  const [activeProduct, setActiveProduct] = useState<Product | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await api.getProducts('?featured=true')
+        const mappedProducts = (data.results || data).map((item: any) => {
+          const IconComponent = (LucideIcons as any)[item.icon || 'Package']
+          return {
+            id: item.id,
+            name: item.name,
+            category: item.category?.name || 'Product',
+            icon: IconComponent || LucideIcons.Package,
+            description: item.description || item.desc,
+            featured: item.featured,
+            stat: item.stat || 'Available',
+          }
+        })
+        setProducts(mappedProducts)
+        if (mappedProducts.length > 0) {
+          setActiveProduct(mappedProducts[0])
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProducts()
+  }, [])
+
+  if (loading) {
+    return (
+      <section className="products-showcase">
+        <div className="products-showcase-container">
+          <div style={{ textAlign: 'center', padding: '4rem 0' }}>Loading products...</div>
+        </div>
+      </section>
+    )
+  }
+
+  if (!activeProduct || products.length === 0) {
+    return (
+      <section className="products-showcase">
+        <div className="products-showcase-container">
+          <div style={{ textAlign: 'center', padding: '4rem 0' }}>No products found.</div>
+        </div>
+      </section>
+    )
+  }
+
+  const featuredProducts = products.filter(p => p.featured)
 
   return (
     <section className="products-showcase">
       <div className="products-showcase-container">
-        {/* Header */}
         <div className="products-showcase-header">
           <span className="products-showcase-badge">Our Products</span>
           <h2 className="products-showcase-title">
@@ -22,9 +85,7 @@ export default function ProductsShowcase() {
           </p>
         </div>
 
-        {/* Main Layout */}
         <div className="products-showcase-grid">
-          {/* Spotlight Card */}
           <div className="products-showcase-spotlight">
             <AnimatePresence mode="wait">
               <motion.div
@@ -58,7 +119,6 @@ export default function ProductsShowcase() {
             </AnimatePresence>
           </div>
 
-          {/* Sidebar */}
           <div className="products-showcase-sidebar">
             {featuredProducts.map((product) => (
               <button
@@ -80,7 +140,7 @@ export default function ProductsShowcase() {
             ))}
 
             <Link to="/products" className="products-showcase-view-all">
-              View All 19 Products →
+              View All {products.length} Products →
             </Link>
           </div>
         </div>

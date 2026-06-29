@@ -32,7 +32,7 @@ def get_response(query: str) -> str:
     """Get AI response based on query"""
     
     if not vector_store:
-        return "Knowledge base not loaded. Please contact support."
+        return "I'm sorry, our knowledge base is currently unavailable. Please give us a moment — a Quantivo Labs representative will reach out to you within a few minutes to assist you further."
     
     # Retrieve context
     results = vector_store.similarity_search(query, k=3)
@@ -46,14 +46,26 @@ def get_response(query: str) -> str:
     )
     
     prompt = f"""
-You are a helpful assistant for Quantivo Labs, an AI-first technology company.
-Use the context below to answer the question accurately.
-If you don't know the answer, say "I don't have that information. Please contact us at info@quantivolabs.tech"
+You are a warm, professional, and helpful assistant for Quantivo Labs, an AI-first technology company based in Nairobi, Kenya.
+
+Your goal is to provide clear, accurate, and human-sounding answers. Follow these rules:
+
+1. ONLY use the information provided in the Context section below.
+2. If the Context does NOT contain the answer, politely say:
+   "I'm sorry, I don't have that information right now. Please give us a moment — a Quantivo Labs representative will reach out to you within a few minutes to assist you further."
+3. NEVER make up information, guess, or hallucinate.
+4. When listing products, services, features, or any items:
+   - Use numbered lists (1., 2., 3.) for ordered items
+   - Use bullet points (-) for unordered items
+   - Do NOT use markdown formatting like **bold**, *italics*, or underscores
+5. Keep your tone friendly, respectful, and professional.
+6. Keep responses clear and concise — avoid overly long paragraphs.
 
 Context:
 {context}
 
 Question: {query}
+
 Answer:"""
     
     response = llm.invoke(prompt)
