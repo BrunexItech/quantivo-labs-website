@@ -30,7 +30,6 @@ export default function Blog() {
   const [activeCategory, setActiveCategory] = useState('All')
   const [hoveredPost, setHoveredPost] = useState<number | null>(null)
 
-  // Get unique categories from posts
   const categories = ['All', ...new Set(posts.map(p => p.category))]
 
   useEffect(() => {
@@ -54,24 +53,20 @@ export default function Blog() {
     ? posts.filter(p => !p.featured)
     : posts.filter(p => p.category === activeCategory && !p.featured)
 
-  // Hero section - Full screen image only, no text
-  const heroSection = (
-    <section className="blog-vanguard__hero">
-      <div className="blog-vanguard__hero-bg">
-        <img 
-          src="https://images.unsplash.com/photo-1563986768711-b3bde3dc821e"
-          alt="Blog hero background"
-          className="blog-vanguard__hero-image"
-        />
-        <div className="blog-vanguard__hero-overlay" />
-      </div>
-    </section>
-  )
-
   if (loading) {
     return (
       <div className="blog-vanguard">
-        {heroSection}
+        {/* Hero - Always visible */}
+        <section className="blog-vanguard__hero">
+          <div className="blog-vanguard__hero-bg">
+            <img 
+              src="https://images.unsplash.com/photo-1563986768711-b3bde3dc821e"
+              alt="Blog hero background"
+              className="blog-vanguard__hero-image"
+            />
+            <div className="blog-vanguard__hero-overlay" />
+          </div>
+        </section>
         <div className="blog-vanguard__container" style={{ padding: '2rem 0', textAlign: 'center' }}>
           <div style={{ fontSize: '1.1rem', color: '#64748B' }}>Loading posts...</div>
         </div>
@@ -82,7 +77,16 @@ export default function Blog() {
   if (posts.length === 0) {
     return (
       <div className="blog-vanguard">
-        {heroSection}
+        <section className="blog-vanguard__hero">
+          <div className="blog-vanguard__hero-bg">
+            <img 
+              src="https://images.unsplash.com/photo-1563986768711-b3bde3dc821e"
+              alt="Blog hero background"
+              className="blog-vanguard__hero-image"
+            />
+            <div className="blog-vanguard__hero-overlay" />
+          </div>
+        </section>
         <div className="blog-vanguard__container" style={{ padding: '2rem 0', textAlign: 'center' }}>
           <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No blog posts found.</div>
         </div>
@@ -92,8 +96,17 @@ export default function Blog() {
 
   return (
     <div className="blog-vanguard">
-      {/* Hero - Full Screen Image Only */}
-      {heroSection}
+      {/* Hero - Full screen image only */}
+      <section className="blog-vanguard__hero">
+        <div className="blog-vanguard__hero-bg">
+          <img 
+            src="https://images.unsplash.com/photo-1563986768711-b3bde3dc821e"
+            alt="Blog hero background"
+            className="blog-vanguard__hero-image"
+          />
+          <div className="blog-vanguard__hero-overlay" />
+        </div>
+      </section>
 
       {/* Featured Article */}
       {featured && (
