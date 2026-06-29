@@ -63,7 +63,7 @@ export default function Footer() {
               </p>
               <div className="footer-modern__socials">
                 <a 
-                  href="#" 
+                  href="https://www.facebook.com/profile.php?id=61591538608690" 
                   className="footer-modern__social footer-modern__social--facebook" 
                   target="_blank" 
                   rel="noopener noreferrer" 
@@ -72,7 +72,7 @@ export default function Footer() {
                   <FaFacebook size={18} />
                 </a>
                 <a 
-                  href="#" 
+                  href="https://www.instagram.com/quantivo.tech" 
                   className="footer-modern__social footer-modern__social--instagram" 
                   target="_blank" 
                   rel="noopener noreferrer" 
@@ -81,7 +81,7 @@ export default function Footer() {
                   <FaInstagram size={18} />
                 </a>
                 <a 
-                  href="#" 
+                  href="https://www.tiktok.com/@quantivotech8" 
                   className="footer-modern__social footer-modern__social--tiktok" 
                   target="_blank" 
                   rel="noopener noreferrer" 
@@ -90,7 +90,7 @@ export default function Footer() {
                   <FaTiktok size={18} />
                 </a>
                 <a 
-                  href="#" 
+                  href="https://www.linkedin.com/company/quantivo-tech/" 
                   className="footer-modern__social footer-modern__social--linkedin" 
                   target="_blank" 
                   rel="noopener noreferrer" 
@@ -138,7 +138,7 @@ export default function Footer() {
                 <li>
                   <div className="footer-modern__contact-item">
                     <MapPin size={15} className="footer-modern__contact-icon" />
-                    <span>Nairobi, Kenya</span>
+                    <span>CPF Building, Mama Ngina Street, Opposite City Hall Annex, 5th Floor, Nairobi, Kenya</span>
                   </div>
                 </li>
                 <li>
@@ -148,9 +148,15 @@ export default function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="tel:+254000000000" className="footer-modern__contact-link">
+                  <a href="tel:+254726339982" className="footer-modern__contact-link">
                     <Phone size={15} className="footer-modern__contact-icon" />
-                    <span>+254 000 000 000</span>
+                    <span>+254 726 339 982</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+254726157375" className="footer-modern__contact-link">
+                    <Phone size={15} className="footer-modern__contact-icon" />
+                    <span>+254 726 157 375</span>
                   </a>
                 </li>
                 <li>
