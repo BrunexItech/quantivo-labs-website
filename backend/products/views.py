@@ -1,9 +1,20 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from .models import Product
-from .serializers import ProductSerializer
+from .models import Category, Product
+from .serializers import CategorySerializer, ProductSerializer
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet for viewing categories
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = 'slug'
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet for viewing products
+    """
     queryset = Product.objects.filter(is_published=True)
     serializer_class = ProductSerializer
     
