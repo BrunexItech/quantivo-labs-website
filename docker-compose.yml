@@ -35,9 +35,9 @@ services:
   frontend:
     build:
       context: .
-      args:
-        - VITE_API_URL=http://38.242.200.152:8009/api
     container_name: quantivo_frontend
+    env_file:
+      - .env
     volumes:
       - static_volume:/usr/share/nginx/html/static
     ports:
