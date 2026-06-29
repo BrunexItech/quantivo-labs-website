@@ -18,3 +18,19 @@ class ContactMessage(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+class HeroSection(models.Model):
+    title = models.CharField(max_length=200)
+    subtitle = models.CharField(max_length=200, blank=True)
+    tag = models.CharField(max_length=100, blank=True)
+    image = models.ImageField(upload_to='hero/', blank=True, null=True)
+    btn_text = models.CharField(max_length=50, default='Get Started')
+    btn_link = models.CharField(max_length=200, default='#contact-form')
+    is_active = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return self.title
+    
+    class Meta:
+        ordering = ['order', 'id']

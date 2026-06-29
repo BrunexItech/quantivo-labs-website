@@ -12,39 +12,39 @@ export const api = {
   getCategories: () => 
     fetch(`${API_BASE}/products/categories/`).then(res => res.json()),
   
-  // Services - keep as is
+  // Services
   getServices: () => 
     fetch(`${API_BASE}/api/services/`).then(res => res.json()),
   
   getService: (slug: string) => 
     fetch(`${API_BASE}/api/services/${slug}/`).then(res => res.json()),
   
-  // Blog - keep as is
+  // Blog
   getBlogPosts: (params: string = '') => 
     fetch(`${API_BASE}/api/blog/${params}`).then(res => res.json()),
   
   getBlogPost: (slug: string) => 
     fetch(`${API_BASE}/api/blog/${slug}/`).then(res => res.json()),
   
-  // Portfolio - keep as is
+  // Portfolio
   getPortfolio: () => 
     fetch(`${API_BASE}/api/portfolio/`).then(res => res.json()),
   
-  // Testimonials - keep as is
+  // Testimonials
   getTestimonials: () => 
     fetch(`${API_BASE}/api/testimonials/`).then(res => res.json()),
   
-  // Partners - keep as is
+  // Partners
   getPartners: (type?: string) => {
     const url = type ? `${API_BASE}/api/partners/?type=${type}` : `${API_BASE}/api/partners/`;
     return fetch(url).then(res => res.json());
   },
   
-  // Industries - keep as is
+  // Industries
   getIndustries: () => 
     fetch(`${API_BASE}/api/industries/`).then(res => res.json()),
   
-  // Contact - keep as is
+  // Contact
   sendContact: (data: {
     name: string;
     email: string;
@@ -57,4 +57,8 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     }).then(res => res.json()),
+  
+  // Hero
+  getHero: () => 
+    fetch(`${API_BASE}/api/contact/hero/`).then(res => res.json()),
 };

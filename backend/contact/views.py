@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import ContactMessage
-from .serializers import ContactSerializer
+from .models import ContactMessage, HeroSection
+from .serializers import ContactSerializer, HeroSerializer
 
 class ContactCreateView(generics.CreateAPIView):
     queryset = ContactMessage.objects.all()
@@ -12,12 +12,9 @@ class ContactCreateView(generics.CreateAPIView):
     
     def perform_create(self, serializer):
         contact = serializer.save()
-        
-        # Send email notifications
         self.send_notifications(contact)
     
     def send_notifications(self, contact):
-        # Admin notification
         admin_message = f"""
 New Contact Form Submission:
 
@@ -35,7 +32,6 @@ Message: {contact.message}
             fail_silently=False,
         )
         
-        # Auto-reply to client
         client_message = f"""
 Dear {contact.name},
 
@@ -51,3 +47,7 @@ Quantivo Labs Team
             [contact.email],
             fail_silently=False,
         )
+
+class HeroListView(generics.ListAPIView):
+    queryset = HeroSection.objects.filter(is_active=True)
+    serializer_class = HeroSerializer

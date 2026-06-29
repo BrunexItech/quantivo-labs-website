@@ -4,7 +4,6 @@ import { MapPin, Phone, Mail, Clock, Send, CheckCircle, MessageCircle, Users, Aw
 import { motion } from 'framer-motion'
 import { api } from '../api'
 
-// TypeScript interfaces
 interface FormData {
   name: string
   email: string
@@ -17,6 +16,16 @@ interface ContactInfo {
   icon: React.ElementType
   label: string
   value: string
+}
+
+interface HeroData {
+  id: number
+  title: string
+  subtitle: string
+  tag: string
+  image: string
+  btn_text: string
+  btn_link: string
 }
 
 export default function Contact() {
@@ -33,12 +42,29 @@ export default function Contact() {
 
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [heroData, setHeroData] = useState<HeroData | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (productParam) {
       setFormData(prev => ({ ...prev, product: productParam }))
     }
   }, [productParam])
+
+  useEffect(() => {
+    const fetchHero = async () => {
+      try {
+        const data = await api.getHero()
+        const hero = data.results?.[0] || data
+        setHeroData(hero)
+      } catch (error) {
+        console.error('Error fetching hero:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchHero()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -65,6 +91,13 @@ export default function Contact() {
     { icon: Mail, label: 'Email Us', value: 'info@quantivolabs.tech' },
   ]
 
+  const heroImage = heroData?.image || 'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1600&q=80'
+  const heroTitle = heroData?.title || "Let's Build Something"
+  const heroSubtitle = heroData?.subtitle || 'Extraordinary Together'
+  const heroTag = heroData?.tag || "Let's Connect"
+  const heroBtnText = heroData?.btn_text || 'Get Started'
+  const heroBtnLink = heroData?.btn_link || '#contact-form'
+
   return (
     <div className="contact-premium">
       {/* ===== CREATIVE HERO WITH IMAGE ===== */}
@@ -72,7 +105,7 @@ export default function Contact() {
         {/* Background Image */}
         <div className="contact-premium__hero-image">
           <img 
-            src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1600&q=80"
+            src={heroImage}
             alt="Contact Us"
             className="contact-premium__hero-img"
           />
@@ -192,11 +225,11 @@ export default function Contact() {
             className="contact-premium__hero-inner"
           >
             <div className="contact-premium__hero-tag">
-              <span>Let's Connect</span>
+              <span>{heroTag}</span>
             </div>
             <h1 className="contact-premium__hero-title">
-              Let's Build Something <br />
-              <span className="contact-premium__hero-accent">Extraordinary Together</span>
+              {heroTitle} <br />
+              <span className="contact-premium__hero-accent">{heroSubtitle}</span>
             </h1>
             <p className="contact-premium__hero-desc">
               Have a project in mind? We'd love to hear from you. Fill in the form below 
@@ -208,8 +241,8 @@ export default function Contact() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="contact-premium__hero-actions"
             >
-              <a href="#contact-form" className="contact-premium__hero-btn">
-                Get Started <ArrowRight size={18} />
+              <a href={heroBtnLink} className="contact-premium__hero-btn">
+                {heroBtnText} <ArrowRight size={18} />
               </a>
             </motion.div>
           </motion.div>
