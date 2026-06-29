@@ -12,39 +12,39 @@ export const api = {
   getCategories: () => 
     fetch(`${API_BASE}/products/categories/`).then(res => res.json()),
   
-  // Services
+  // Services - keep as is
   getServices: () => 
     fetch(`${API_BASE}/api/services/`).then(res => res.json()),
   
   getService: (slug: string) => 
     fetch(`${API_BASE}/api/services/${slug}/`).then(res => res.json()),
   
-  // Blog
+  // Blog - keep as is
   getBlogPosts: (params: string = '') => 
     fetch(`${API_BASE}/api/blog/${params}`).then(res => res.json()),
   
   getBlogPost: (slug: string) => 
     fetch(`${API_BASE}/api/blog/${slug}/`).then(res => res.json()),
   
-  // Portfolio
+  // Portfolio - keep as is
   getPortfolio: () => 
     fetch(`${API_BASE}/api/portfolio/`).then(res => res.json()),
   
-  // Testimonials
+  // Testimonials - keep as is
   getTestimonials: () => 
     fetch(`${API_BASE}/api/testimonials/`).then(res => res.json()),
   
-  // Partners
+  // Partners - keep as is
   getPartners: (type?: string) => {
     const url = type ? `${API_BASE}/api/partners/?type=${type}` : `${API_BASE}/api/partners/`;
     return fetch(url).then(res => res.json());
   },
   
-  // Industries
+  // Industries - keep as is
   getIndustries: () => 
     fetch(`${API_BASE}/api/industries/`).then(res => res.json()),
   
-  // Contact
+  // Contact - keep as is
   sendContact: (data: {
     name: string;
     email: string;
