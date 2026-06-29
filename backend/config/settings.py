@@ -18,7 +18,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-in-prod
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,38.242.200.152').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -79,27 +79,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database - SQLite for local, PostgreSQL for production (Docker)
-RUNNING_IN_DOCKER = os.getenv('RUNNING_IN_DOCKER', 'False') == 'True'
-
-if RUNNING_IN_DOCKER:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'quantivo_db'),
-            'USER': os.getenv('DB_USER', 'quantivo_user'),
-            'PASSWORD': os.getenv('DB_PASSWORD', 'quantivo_pass'),
-            'HOST': 'db',
-            'PORT': os.getenv('DB_PORT', '5432'),
-        }
+# Database - Force PostgreSQL for both local and production
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'quantivo_db'),
+        'USER': os.getenv('DB_USER', 'quantivo_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'quantivo_pass'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
