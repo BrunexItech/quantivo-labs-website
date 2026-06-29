@@ -9,7 +9,6 @@ import {
 } from 'lucide-react'
 import { api } from '../api'
 
-// Define the shape your frontend expects (matches original hardcoded structure)
 interface Category {
   id: string
   name: string
@@ -28,7 +27,7 @@ interface Product {
   desc: string
   features: string[]
   stack: string[]
-  category: string  // category name as string (matches original)
+  category: string
 }
 
 export default function Products() {
@@ -41,20 +40,18 @@ export default function Products() {
   const [isPillMode, setIsPillMode] = useState<boolean>(false)
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
-  // Map backend category to frontend format
   const mapCategoryToFrontend = (backendCategory: any): Category => {
     return {
       id: String(backendCategory.id),
       name: backendCategory.name,
       emoji: backendCategory.icon || '📦',
       color: backendCategory.color || '#2563EB',
-      bgColor: `${backendCategory.color || '#2563EB'}12`, // Add transparency for bg
+      bgColor: `${backendCategory.color || '#2563EB'}12`,
       image: backendCategory.image || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',
       description: backendCategory.description || ''
     }
   }
 
-  // Map backend product to frontend format
   const mapProductToFrontend = (backendProduct: any): Product => {
     return {
       id: backendProduct.id,
@@ -82,18 +79,15 @@ export default function Products() {
         console.log('Products data from backend:', productsData)
         console.log('Categories data from backend:', categoriesData)
         
-        // Extract results or use the data directly
         const productList = productsData.results || productsData || []
         const categoryList = categoriesData.results || categoriesData || []
         
-        // Map to frontend format
         const mappedProducts = productList.map(mapProductToFrontend)
         const mappedCategories = categoryList.map(mapCategoryToFrontend)
         
         setProducts(mappedProducts)
         setCategories(mappedCategories)
         
-        // Auto-expand first category if there are categories
         if (mappedCategories.length > 0) {
           setExpandedCategory(mappedCategories[0].id)
         }
@@ -140,19 +134,60 @@ export default function Products() {
     return products.filter(p => p.category === categoryName)
   }
 
-  if (loading) {
-    return (
-      <div className="products-page">
-        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.2rem', color: '#64748B' }}>Loading products...</div>
+  // Hero section - always visible, never changes
+  const heroSection = (
+    <section className="products-hero">
+      <div className="products-hero__bg">
+        <img 
+          src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=815&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Digital transformation background"
+          className="products-hero__bg-image"
+        />
+        <div className="products-hero__overlay" />
+      </div>
+      <div className="products-hero__container">
+        <div className="products-hero__content">
+          <div className="products-hero__tag">
+            <span>Our Products</span>
+          </div>
+          <h1 className="products-hero__title">
+            Building Africa's<br />
+            <span className="products-gradient">Digital Future</span>
+          </h1>
+          <p className="products-hero__desc">
+            A growing portfolio of intelligent platforms designed to power businesses across industries.
+          </p>
+          <div className="products-hero__actions">
+            <Link to="/contact" className="products-btn-primary">
+              Explore Solutions <ArrowRight size={18} />
+            </Link>
+            <Link to="/contact" className="products-btn-secondary">
+              Request Demo
+            </Link>
+          </div>
+        </div>
+        <div className="products-hero__stats">
+          <div className="products-stat">
+            <span className="products-stat__number">{loading ? '...' : products.length}</span>
+            <span className="products-stat__label">Products</span>
+          </div>
+          <div className="products-stat">
+            <span className="products-stat__number">{loading ? '...' : categories.length}</span>
+            <span className="products-stat__label">Categories</span>
+          </div>
+          <div className="products-stat">
+            <span className="products-stat__number">100+</span>
+            <span className="products-stat__label">Clients</span>
+          </div>
         </div>
       </div>
-    )
-  }
+    </section>
+  )
 
   if (error) {
     return (
       <div className="products-page">
+        {heroSection}
         <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
           <div style={{ color: '#DC2626', marginBottom: '1rem' }}>⚠️ {error}</div>
           <button 
@@ -173,73 +208,10 @@ export default function Products() {
     )
   }
 
-  if (products.length === 0) {
-    return (
-      <div className="products-page">
-        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No products found.</div>
-        </div>
-      </div>
-    )
-  }
-
-  if (categories.length === 0) {
-    return (
-      <div className="products-page">
-        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No categories configured yet.</div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="products-page">
-      {/* ===== HERO - REDUCED ===== */}
-      <section className="products-hero">
-        <div className="products-hero__bg">
-          <div className="products-hero__gradient" />
-          <div className="products-hero__orb products-hero__orb--1" />
-          <div className="products-hero__orb products-hero__orb--2" />
-          <div className="products-hero__orb products-hero__orb--3" />
-        </div>
-        <div className="container products-hero__container">
-          <div className="products-hero__content">
-            <div className="products-hero__tag">
-              <span>Our Products</span>
-            </div>
-            <h1 className="products-hero__title">
-              Building Africa's<br />
-              <span className="products-gradient">Digital Future</span>
-            </h1>
-            <p className="products-hero__desc">
-              A growing portfolio of intelligent platforms designed to power businesses across industries.
-            </p>
-            <div className="products-hero__actions">
-              <Link to="/contact" className="products-btn-primary">
-                Explore Solutions <ArrowRight size={18} />
-              </Link>
-              <Link to="/contact" className="products-btn-secondary">
-                Request Demo
-              </Link>
-            </div>
-          </div>
-          <div className="products-hero__stats">
-            <div className="products-stat">
-              <span className="products-stat__number">{products.length}</span>
-              <span className="products-stat__label">Products</span>
-            </div>
-            <div className="products-stat">
-              <span className="products-stat__number">{categories.length}</span>
-              <span className="products-stat__label">Categories</span>
-            </div>
-            <div className="products-stat">
-              <span className="products-stat__number">100+</span>
-              <span className="products-stat__label">Clients</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero always visible - loads instantly */}
+      {heroSection}
 
       {/* ===== CATEGORY NAVIGATION PILLS ===== */}
       <section className="products-nav-section">
@@ -274,88 +246,101 @@ export default function Products() {
       {/* ===== CATEGORY CARDS ===== */}
       <section className="products-categories-section">
         <div className="container">
-          <div className="products-categories-grid">
-            {categories.map((category) => {
-              const isExpanded = expandedCategory === category.id
-              const categoryProducts = getProductsByCategory(category.name)
-              const productCount = categoryProducts.length
-              
-              const shouldHide = isPillMode && activePill !== category.id
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+              <div style={{ fontSize: '1.1rem', color: '#64748B' }}>Loading products...</div>
+            </div>
+          ) : products.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+              <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No products found.</div>
+            </div>
+          ) : categories.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+              <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No categories configured yet.</div>
+            </div>
+          ) : (
+            <div className="products-categories-grid">
+              {categories.map((category) => {
+                const isExpanded = expandedCategory === category.id
+                const categoryProducts = getProductsByCategory(category.name)
+                const productCount = categoryProducts.length
+                
+                const shouldHide = isPillMode && activePill !== category.id
 
-              return (
-                <div 
-                  key={category.id} 
-                  ref={(el) => (categoryRefs.current[category.id] = el)}
-                  className={`products-category-card ${isExpanded ? 'products-category-card--expanded' : ''} ${shouldHide ? 'products-category-card--hidden' : ''}`}
-                  style={{ '--category-color': category.color } as React.CSSProperties}
-                >
+                return (
                   <div 
-                    className="products-category-card__header"
-                    onClick={() => toggleCategory(category.id)}
+                    key={category.id} 
+                    ref={(el) => (categoryRefs.current[category.id] = el)}
+                    className={`products-category-card ${isExpanded ? 'products-category-card--expanded' : ''} ${shouldHide ? 'products-category-card--hidden' : ''}`}
+                    style={{ '--category-color': category.color } as React.CSSProperties}
                   >
-                    <div className="products-category-card__image">
-                      <img src={category.image} alt={category.name} />
-                      <div className="products-category-card__overlay" style={{ background: `linear-gradient(135deg, ${category.color}cc, ${category.color}66)` }} />
-                      <div className="products-category-card__badge">
-                        <span className="products-category-card__emoji">{category.emoji}</span>
-                        <span className="products-category-card__count">{productCount} products</span>
+                    <div 
+                      className="products-category-card__header"
+                      onClick={() => toggleCategory(category.id)}
+                    >
+                      <div className="products-category-card__image">
+                        <img src={category.image} alt={category.name} />
+                        <div className="products-category-card__overlay" style={{ background: `linear-gradient(135deg, ${category.color}cc, ${category.color}66)` }} />
+                        <div className="products-category-card__badge">
+                          <span className="products-category-card__emoji">{category.emoji}</span>
+                          <span className="products-category-card__count">{productCount} products</span>
+                        </div>
+                      </div>
+                      <div className="products-category-card__info">
+                        <div className="products-category-card__name" style={{ color: category.color }}>
+                          {category.name}
+                        </div>
+                        <p className="products-category-card__description">{category.description}</p>
+                        <div className="products-category-card__toggle">
+                          <Eye size={16} className="products-category-card__toggle-icon" />
+                          <span className="products-category-card__toggle-text">
+                            {isExpanded ? 'Hide Products' : `View ${productCount} Products`}
+                          </span>
+                          {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </div>
                       </div>
                     </div>
-                    <div className="products-category-card__info">
-                      <div className="products-category-card__name" style={{ color: category.color }}>
-                        {category.name}
-                      </div>
-                      <p className="products-category-card__description">{category.description}</p>
-                      <div className="products-category-card__toggle">
-                        <Eye size={16} className="products-category-card__toggle-icon" />
-                        <span className="products-category-card__toggle-text">
-                          {isExpanded ? 'Hide Products' : `View ${productCount} Products`}
-                        </span>
-                        {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Expanded Products */}
-                  {isExpanded && (
-                    <div className="products-category-card__products">
-                      <div className="products-category-card__products-grid">
-                        {categoryProducts.map((product) => (
-                          <div key={product.id} className="products-category-card__product">
-                            <div className="products-category-card__product-icon">
-                              <BarChart2 size={26} />
-                            </div>
-                            <div className="products-category-card__product-content">
-                              <div className="products-category-card__product-header">
-                                <h4 className="products-category-card__product-name">{product.name}</h4>
-                                <span className={`products-pill ${product.tagClass}`}>{product.tag}</span>
+                    {/* Expanded Products */}
+                    {isExpanded && (
+                      <div className="products-category-card__products">
+                        <div className="products-category-card__products-grid">
+                          {categoryProducts.map((product) => (
+                            <div key={product.id} className="products-category-card__product">
+                              <div className="products-category-card__product-icon">
+                                <BarChart2 size={26} />
                               </div>
-                              <p className="products-category-card__product-desc">{product.desc}</p>
-                              <div className="products-category-card__product-features">
-                                {product.features.slice(0, 3).map((f: string) => (
-                                  <div key={f} className="products-category-card__product-feature">
-                                    <CheckCircle2 size={12} color={category.color} />
-                                    <span>{f}</span>
-                                  </div>
-                                ))}
+                              <div className="products-category-card__product-content">
+                                <div className="products-category-card__product-header">
+                                  <h4 className="products-category-card__product-name">{product.name}</h4>
+                                  <span className={`products-pill ${product.tagClass}`}>{product.tag}</span>
+                                </div>
+                                <p className="products-category-card__product-desc">{product.desc}</p>
+                                <div className="products-category-card__product-features">
+                                  {product.features.slice(0, 3).map((f: string) => (
+                                    <div key={f} className="products-category-card__product-feature">
+                                      <CheckCircle2 size={12} color={category.color} />
+                                      <span>{f}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                                <Link to="/contact" className="products-category-card__product-link">
+                                  Learn More <ArrowRight size={14} />
+                                </Link>
                               </div>
-                              <Link to="/contact" className="products-category-card__product-link">
-                                Learn More <ArrowRight size={14} />
-                              </Link>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ===== STYLES - EXACTLY AS ORIGINAL ===== */}
       <style>{`
         /* ============================================================
            PRODUCTS PAGE - CATEGORY BASED
@@ -392,71 +377,50 @@ export default function Products() {
         }
 
         /* ============================================================
-           HERO - REDUCED
+           HERO - FULL SCREEN WITH STATIC IMAGE
            ============================================================ */
         .products-hero {
           position: relative;
-          padding: 4rem 0 3rem;
-          overflow: hidden;
-          background: #0c1a3a;
+          min-height: 100vh;
+          width: 100%;
           display: flex;
           align-items: center;
-          justify-content: center;
-          text-align: center;
-          min-height: auto;
+          overflow: hidden;
         }
 
         .products-hero__bg {
           position: absolute;
           inset: 0;
-          overflow: hidden;
+          z-index: 0;
+          width: 100%;
+          height: 100%;
         }
 
-        .products-hero__gradient {
+        .products-hero__bg-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .products-hero__overlay {
           position: absolute;
           inset: 0;
-          background: radial-gradient(ellipse at 70% 20%, rgba(249, 115, 78, 0.12) 0%, transparent 60%),
-                      radial-gradient(ellipse at 30% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
-        }
-
-        .products-hero__orb {
-          position: absolute;
-          border-radius: 50%;
-          pointer-events: none;
-          filter: blur(80px);
-        }
-
-        .products-hero__orb--1 {
-          width: 400px;
-          height: 400px;
-          top: -10%;
-          right: -5%;
-          background: rgba(249, 115, 78, 0.08);
-        }
-
-        .products-hero__orb--2 {
-          width: 300px;
-          height: 300px;
-          bottom: -10%;
-          left: 10%;
-          background: rgba(99, 102, 241, 0.06);
-        }
-
-        .products-hero__orb--3 {
-          width: 200px;
-          height: 200px;
-          top: 40%;
-          right: 20%;
-          background: rgba(249, 115, 78, 0.04);
+          background: linear-gradient(135deg, rgba(12, 26, 58, 0.88) 0%, rgba(12, 26, 58, 0.4) 50%, rgba(12, 26, 58, 0.75) 100%);
+          z-index: 1;
         }
 
         .products-hero__container {
           position: relative;
           z-index: 2;
           width: 100%;
+          max-width: 1240px;
+          margin: 0 auto;
+          padding: 0 28px;
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
+          min-height: 100vh;
         }
 
         .products-hero__content {
@@ -485,7 +449,7 @@ export default function Products() {
         }
 
         .products-hero__title {
-          font-size: 2.8rem;
+          font-size: clamp(2rem, 5vw, 3.5rem);
           font-weight: 800;
           line-height: 1.1;
           color: #ffffff;
@@ -494,7 +458,7 @@ export default function Products() {
         }
 
         .products-hero__desc {
-          font-size: 1rem;
+          font-size: clamp(0.95rem, 1.2vw, 1.1rem);
           line-height: 1.7;
           color: rgba(255, 255, 255, 0.7);
           max-width: 600px;
@@ -559,6 +523,7 @@ export default function Products() {
           padding-top: 1.5rem;
           border-top: 1px solid rgba(255, 255, 255, 0.06);
           justify-content: center;
+          flex-wrap: wrap;
         }
 
         .products-stat {
@@ -568,7 +533,7 @@ export default function Products() {
         }
 
         .products-stat__number {
-          font-size: 1.8rem;
+          font-size: clamp(1.5rem, 2.5vw, 2rem);
           font-weight: 800;
           color: #ffffff;
           letter-spacing: -0.02em;
@@ -932,12 +897,6 @@ export default function Products() {
            RESPONSIVE
            ============================================================ */
         @media (max-width: 1024px) {
-          .products-hero__title {
-            font-size: 2.4rem;
-          }
-          .products-hero__stats {
-            gap: 2rem;
-          }
           .products-category-card__header {
             grid-template-columns: 200px 1fr;
           }
@@ -970,23 +929,20 @@ export default function Products() {
             grid-template-columns: 1fr;
           }
           .products-hero {
-            padding: 3rem 0 2rem;
+            min-height: 80vh;
+          }
+          .products-hero__container {
+            min-height: 80vh;
+            padding: 0 20px;
           }
           .products-hero__title {
-            font-size: 2rem;
-          }
-          .products-hero__desc {
-            font-size: 0.95rem;
+            font-size: 2.2rem;
           }
           .products-hero__stats {
             gap: 1.5rem;
-            flex-wrap: wrap;
           }
           .products-stat__number {
             font-size: 1.4rem;
-          }
-          .products-hero__orb {
-            display: none;
           }
           .products-nav-section {
             top: 64px;
@@ -1009,13 +965,17 @@ export default function Products() {
             padding: 0 16px;
           }
           .products-hero {
-            padding: 2.5rem 0 1.5rem;
+            min-height: 70vh;
+          }
+          .products-hero__container {
+            min-height: 70vh;
+            padding: 0 16px;
           }
           .products-hero__title {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
           }
           .products-hero__desc {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
           }
           .products-hero__actions {
             flex-direction: column;
@@ -1030,8 +990,6 @@ export default function Products() {
           }
           .products-hero__stats {
             gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
             padding-top: 1rem;
             margin-top: 1.5rem;
           }
@@ -1095,7 +1053,28 @@ export default function Products() {
           }
         }
 
-        @media (max-width: 400px) {
+        @media (max-width: 480px) {
+          .products-hero {
+            min-height: 60vh;
+          }
+          .products-hero__container {
+            min-height: 60vh;
+          }
+          .products-hero__title {
+            font-size: 1.5rem;
+          }
+          .products-hero__desc {
+            font-size: 0.85rem;
+          }
+          .products-hero__stats {
+            gap: 0.75rem;
+          }
+          .products-stat__number {
+            font-size: 1.1rem;
+          }
+          .products-stat__label {
+            font-size: 0.6rem;
+          }
           .products-category-card__image {
             height: 120px;
           }

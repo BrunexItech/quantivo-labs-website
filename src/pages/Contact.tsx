@@ -91,7 +91,6 @@ export default function Contact() {
     { icon: Mail, label: 'Email Us', value: 'info@quantivolabs.tech' },
   ]
 
-  const heroImage = heroData?.image || 'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1600&q=80'
   const heroTitle = heroData?.title || "Let's Build Something"
   const heroSubtitle = heroData?.subtitle || 'Extraordinary Together'
   const heroTag = heroData?.tag || "Let's Connect"
@@ -100,12 +99,12 @@ export default function Contact() {
 
   return (
     <div className="contact-premium">
-      {/* ===== CREATIVE HERO WITH IMAGE ===== */}
+      {/* ===== CREATIVE HERO WITH STATIC IMAGE ===== */}
       <section className="contact-premium__hero">
-        {/* Background Image */}
+        {/* Background Image - Static */}
         <div className="contact-premium__hero-image">
           <img 
-            src={heroImage}
+            src="https://images.unsplash.com/photo-1512944159308-fbe53a63b779?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Contact Us"
             className="contact-premium__hero-img"
           />
@@ -218,34 +217,40 @@ export default function Contact() {
 
         {/* Content */}
         <div className="contact-premium__hero-content">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="contact-premium__hero-inner"
-          >
-            <div className="contact-premium__hero-tag">
-              <span>{heroTag}</span>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '4rem 0', color: '#94A3B8' }}>
+              Loading...
             </div>
-            <h1 className="contact-premium__hero-title">
-              {heroTitle} <br />
-              <span className="contact-premium__hero-accent">{heroSubtitle}</span>
-            </h1>
-            <p className="contact-premium__hero-desc">
-              Have a project in mind? We'd love to hear from you. Fill in the form below 
-              and our team will reach out within 24 hours.
-            </p>
+          ) : (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="contact-premium__hero-actions"
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="contact-premium__hero-inner"
             >
-              <a href={heroBtnLink} className="contact-premium__hero-btn">
-                {heroBtnText} <ArrowRight size={18} />
-              </a>
+              <div className="contact-premium__hero-tag">
+                <span>{heroTag}</span>
+              </div>
+              <h1 className="contact-premium__hero-title">
+                {heroTitle} <br />
+                <span className="contact-premium__hero-accent">{heroSubtitle}</span>
+              </h1>
+              <p className="contact-premium__hero-desc">
+                Have a project in mind? We'd love to hear from you. Fill in the form below 
+                and our team will reach out within 24 hours.
+              </p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="contact-premium__hero-actions"
+              >
+                <a href={heroBtnLink} className="contact-premium__hero-btn">
+                  {heroBtnText} <ArrowRight size={18} />
+                </a>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          )}
         </div>
       </section>
 
@@ -425,7 +430,7 @@ export default function Contact() {
 
       <style>{`
         /* ================================================================
-           CONTACT PREMIUM - CREATIVE HERO WITH IMAGE
+           CONTACT PREMIUM - CREATIVE HERO WITH STATIC IMAGE
            ================================================================ */
 
         .contact-premium {
@@ -440,7 +445,7 @@ export default function Contact() {
         }
 
         /* ================================================================
-           CREATIVE HERO WITH IMAGE
+           CREATIVE HERO WITH STATIC IMAGE
            ================================================================ */
 
         .contact-premium__hero {
