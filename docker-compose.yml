@@ -38,7 +38,7 @@ services:
         - VITE_API_URL=http://38.242.200.152:8009/api
     container_name: quantivo_frontend
     ports:
-      - "8089:80"
+      - "8086:80"
     depends_on:
       - backend
     restart: always
