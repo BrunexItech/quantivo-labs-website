@@ -7,225 +7,76 @@ import {
   Users2, Banknote, Server, ClipboardList, Sparkles,
   Rocket, Zap, Layers, Grid3X3, ChevronDown, ChevronUp, Eye
 } from 'lucide-react'
+import { api } from '../api'
 
-const products = [
-  {
-    icon: <BarChart2 size={26} />,
-    name: 'QuantivoCRM',
-    tag: 'CRM / AI', tagClass: 'pill-red',
-    desc: 'The first AI-powered CRM built from the ground up for African enterprises. Manage leads, deals, and customer journeys with M-Pesa integration, multilingual AI follow-ups, and a 360° client view — all in one platform.',
-    features: ['360° contact & deal tracking', 'M-Pesa transaction sync', 'AI-drafted follow-up emails/SMS', 'Drag-and-drop sales pipeline', 'Forecasting & team dashboards', 'WhatsApp & Gmail integration'],
-    stack: ['React', 'Node.js', 'PostgreSQL', 'OpenAI', 'M-Pesa'],
-    category: 'Business & Management'
-  },
-  {
-    icon: <Landmark size={26} />,
-    name: 'DFS — Digital Financial Services',
-    tag: 'Digital Finance', tagClass: 'pill-indigo',
-    desc: 'A comprehensive digital financial services platform integrating mobile money, banking APIs, agent banking networks, and digital lending for the modern African financial ecosystem.',
-    features: ['Mobile money integration', 'Agent banking network', 'Digital lending engine', 'KYC & compliance', 'Real-time reporting', 'Multi-channel access'],
-    stack: ['Node.js', 'PostgreSQL', 'Redis', 'M-Pesa', 'AWS'],
-    category: 'Fintech & Payments'
-  },
-  {
-    icon: <CreditCard size={26} />,
-    name: 'PSP — Payment Service Provider',
-    tag: 'Fintech', tagClass: 'pill-cyan',
-    desc: 'Secure, scalable payment processing infrastructure for businesses of all sizes. Accept payments via cards, mobile money, and bank transfers with enterprise-grade reliability.',
-    features: ['Multi-currency support', 'Real-time fraud detection', 'M-Pesa & Paystack', 'PCI-DSS compliant', 'Merchant dashboard', 'Settlement reports'],
-    stack: ['Node.js', 'PostgreSQL', 'Redis', 'AWS Lambda'],
-    category: 'Fintech & Payments'
-  },
-  {
-    icon: <Wallet size={26} />,
-    name: 'Digital Wallet',
-    tag: 'Fintech', tagClass: 'pill-cyan',
-    desc: 'Mobile and web-based digital payment solution with deep M-Pesa integration. Send, receive, and store money with a seamless, secure user experience.',
-    features: ['M-Pesa integration', 'P2P transfers', 'QR code payments', 'Transaction history', 'Multi-wallet support', 'KYC verification'],
-    stack: ['React Native', 'Node.js', 'MongoDB', 'GCP'],
-    category: 'Fintech & Payments'
-  },
-  {
-    icon: <GraduationCap size={26} />,
-    name: 'School Management System',
-    tag: 'EduTech', tagClass: 'pill-emerald',
-    desc: 'End-to-end school administration platform covering student enrollment, fee collection, attendance, timetabling, examinations, and parent communication — all in one place.',
-    features: ['Student registration & profiles', 'Fee billing & M-Pesa payments', 'Attendance tracking', 'Timetable management', 'Exam results portal', 'Parent communication portal'],
-    stack: ['React', 'Node.js', 'PostgreSQL', 'Twilio', 'M-Pesa'],
-    category: 'Business & Management'
-  },
-  {
-    icon: <Hospital size={26} />,
-    name: 'Hospital Management System',
-    tag: 'HealthTech', tagClass: 'pill-rose',
-    desc: 'A complete hospital operations platform covering patient registration, OPD/IPD management, pharmacy, lab, billing, and insurance claims for healthcare facilities of any size.',
-    features: ['Patient registration & EMR', 'OPD & IPD management', 'Pharmacy module', 'Lab & radiology', 'Insurance claims', 'Revenue analytics'],
-    stack: ['React', 'Django', 'PostgreSQL', 'HL7 FHIR', 'AWS'],
-    category: 'Business & Management'
-  },
-  {
-    icon: <ShoppingBag size={26} />,
-    name: 'POS — Point of Sale System',
-    tag: 'Retail', tagClass: 'pill-teal',
-    desc: 'Cloud-based point-of-sale system built for retail businesses. Accept payments, manage inventory, track sales, and generate reports — from any device, online or offline.',
-    features: ['Offline-first architecture', 'Multi-terminal support', 'Inventory management', 'Receipt printing', 'Staff & shift management', 'Sales analytics'],
-    stack: ['Electron', 'React', 'Node.js', 'SQLite', 'PostgreSQL'],
-    category: 'Hospitality & Retail'
-  },
-  {
-    icon: <Hotel size={26} />,
-    name: 'Hotel POS',
-    tag: 'Hospitality', tagClass: 'pill-amber',
-    desc: 'An integrated point-of-sale solution designed specifically for hotels — connecting the restaurant, bar, room service, spa, and front desk into a single unified billing system.',
-    features: ['Room charge posting', 'Multi-outlet billing', 'Split bill management', 'Real-time stock control', 'Shift reconciliation', 'Revenue reports by outlet'],
-    stack: ['React', 'Node.js', 'PostgreSQL', 'Thermal Print API'],
-    category: 'Hospitality & Retail'
-  },
-  {
-    icon: <Hotel size={26} />,
-    name: 'Hotel Management System',
-    tag: 'Hospitality', tagClass: 'pill-amber',
-    desc: 'Complete hotel operations management covering reservations, housekeeping, billing, channel management, and guest experience from check-in to check-out.',
-    features: ['PMS & reservations', 'Channel manager (OTA sync)', 'Housekeeping module', 'Guest self-check-in', 'Revenue analytics', 'Multi-property support'],
-    stack: ['React', 'Node.js', 'PostgreSQL', 'Booking.com API', 'AWS'],
-    category: 'Hospitality & Retail'
-  },
-  {
-    icon: <ShoppingCart size={26} />,
-    name: 'Ecommerce Platform',
-    tag: 'Commerce', tagClass: 'pill-teal',
-    desc: 'Full-stack online shopping platform with integrated payment APIs, AI-powered recommendations, and multi-vendor marketplace capabilities.',
-    features: ['Product catalog & CMS', 'Cart & secure checkout', 'Payment gateway integrations', 'Inventory management', 'Seller marketplace', 'Analytics dashboard'],
-    stack: ['React', 'Node.js', 'PostgreSQL', 'Stripe', 'Cloudinary'],
-    category: 'Hospitality & Retail'
-  },
-  {
-    icon: <Calendar size={26} />,
-    name: 'Booking Solutions',
-    tag: 'SaaS', tagClass: 'pill-purple',
-    desc: 'Reservation and scheduling system for service-based businesses. Manage appointments, resources, staff availability, and customer bookings with intelligent automation.',
-    features: ['Online self-booking', 'Calendar sync', 'Automated SMS reminders', 'Staff management', 'Payment collection', 'Customer portal'],
-    stack: ['React', 'Python', 'PostgreSQL', 'Twilio', 'Stripe'],
-    category: 'Hospitality & Retail'
-  },
-  {
-    icon: <Building2 size={26} />,
-    name: 'Sacco Management System',
-    tag: 'Finance', tagClass: 'pill-gold',
-    desc: 'Comprehensive financial management platform for SACCOs. Manage members, loans, savings, dividends, and compliance from a single unified dashboard.',
-    features: ['Member registry', 'Loan origination & tracking', 'Dividend calculation', 'Mobile banking for members', 'Compliance reports', 'SMS & email notifications'],
-    stack: ['React', 'Django', 'PostgreSQL', 'Celery', 'AWS RDS'],
-    category: 'Business & Management'
-  },
-  {
-    icon: <Share2 size={26} />,
-    name: 'Viral Blast',
-    tag: 'AI Tool', tagClass: 'pill-purple',
-    desc: 'AI-powered social media strategy and content creation platform. Generate, schedule, and analyse campaigns that resonate with your target audience and drive organic reach.',
-    features: ['AI content generation', 'Viral score prediction', 'Multi-platform scheduling', 'Analytics & insights', 'A/B testing', 'Competitor analysis'],
-    stack: ['React', 'Python', 'OpenAI API', 'Redis', 'Meta APIs'],
-    category: 'AI & Automation'
-  },
-  {
-    icon: <Users2 size={26} />,
-    name: 'Chama Management System',
-    tag: 'Finance', tagClass: 'pill-emerald',
-    desc: 'A dedicated digital platform for managing investment groups (chamas), SHGs, and table banking circles. Automate contributions, loans, interest calculations, fines, and dividend payouts — with full M-Pesa integration and transparent member reporting.',
-    features: ['Member registration & profiles', 'Automated M-Pesa contributions', 'Loan & interest management', 'Fine & penalty tracking', 'Dividend & share distribution', 'Meeting minutes & voting records', 'Real-time member statements', 'SMS & WhatsApp notifications'],
-    stack: ['React', 'Node.js', 'PostgreSQL', 'M-Pesa', 'Twilio', 'AWS'],
-    category: 'Business & Management'
-  },
-  {
-    icon: <Banknote size={26} />,
-    name: 'Agency Banking Platform',
-    tag: 'Digital Finance', tagClass: 'pill-indigo',
-    desc: 'A white-label agency banking solution enabling banks, MFIs, and fintechs to deploy agent networks that bring financial services to the last mile. Agents handle deposits, withdrawals, account opening, and loan disbursements from any mobile device.',
-    features: ['Agent onboarding & KYC', 'Cash deposit & withdrawal', 'Fund transfers & bill payments', 'Loan disbursement via agents', 'Agent float management', 'Real-time transaction monitoring', 'Commission & settlement engine', 'Offline transaction queuing'],
-    stack: ['React Native', 'Node.js', 'PostgreSQL', 'M-Pesa', 'Redis', 'AWS'],
-    category: 'Fintech & Payments'
-  },
-  {
-    icon: <Server size={26} />,
-    name: 'Cloud Hosting & Infrastructure',
-    tag: 'Cloud', tagClass: 'pill-cyan',
-    desc: 'Managed cloud hosting and DevOps services purpose-built for African businesses. From shared hosting to dedicated cloud infrastructure on AWS and GCP — with local support, guaranteed uptime SLAs, and automated backups.',
-    features: ['Managed AWS / GCP hosting', 'Auto-scaling & load balancing', 'SSL certificates & CDN', 'Daily automated backups', 'CI/CD pipeline setup', '24/7 infrastructure monitoring', 'Database management (PostgreSQL, MySQL, MongoDB)', 'Domain registration & DNS management'],
-    stack: ['AWS', 'GCP', 'Docker', 'Kubernetes', 'Terraform', 'Nginx'],
-    category: 'Cloud & Infrastructure'
-  },
-  {
-    icon: <ClipboardList size={26} />,
-    name: 'Project Management Platform',
-    tag: 'Productivity', tagClass: 'pill-purple',
-    desc: 'A collaborative project management platform built for African enterprises and government agencies. Plan, track, and deliver projects on time with task boards, Gantt charts, resource planning, budgeting, and real-time team collaboration — all in one workspace.',
-    features: ['Project & task boards (Kanban / Gantt)', 'Milestone & deadline tracking', 'Resource & workload planning', 'Budget tracking & cost reporting', 'Team collaboration & file sharing', 'Risk register & issue tracking', 'Custom dashboards & progress reports', 'Client portal & stakeholder updates'],
-    stack: ['React', 'Node.js', 'PostgreSQL', 'WebSockets', 'AWS', 'Redis'],
-    category: 'Business & Management'
-  },
-  {
-    icon: <PhoneCall size={26} />,
-    name: 'AI Call Center',
-    tag: 'AI', tagClass: 'pill-purple',
-    desc: 'Intelligent customer service automation with multilingual support. Handle high call volumes with AI-powered voice agents that understand and respond naturally in English and Swahili.',
-    features: ['Voice AI agents (EN + SW)', 'Sentiment analysis', 'CRM integration', 'Smart escalation', 'Live transfer to agents', 'Quality scoring dashboard'],
-    stack: ['Python', 'Whisper ASR', 'GPT-4', 'Twilio', 'FastAPI'],
-    category: 'AI & Automation'
-  },
-]
-
-const categories = [
-  {
-    id: 'fintech',
-    name: 'Fintech & Payments',
-    emoji: '💳',
-    color: '#2563EB',
-    bgColor: '#DBEAFE',
-    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&q=80',
-    description: 'Digital payment solutions, mobile money integration, and financial infrastructure for the modern African economy.'
-  },
-  {
-    id: 'business',
-    name: 'Business & Management',
-    emoji: '🏢',
-    color: '#7C3AED',
-    bgColor: '#EDE9FE',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80',
-    description: 'Comprehensive management platforms for CRM, education, healthcare, SACCOs, and project delivery.'
-  },
-  {
-    id: 'hospitality',
-    name: 'Hospitality & Retail',
-    emoji: '🏨',
-    color: '#F59E0B',
-    bgColor: '#FEF3C7',
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',
-    description: 'Point-of-sale systems, hotel management, ecommerce, and booking solutions for the service industry.'
-  },
-  {
-    id: 'ai',
-    name: 'AI & Automation',
-    emoji: '🤖',
-    color: '#EC4899',
-    bgColor: '#FCE7F3',
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&q=80',
-    description: 'Intelligent automation, AI-powered content generation, and smart customer service solutions.'
-  },
-  {
-    id: 'cloud',
-    name: 'Cloud & Infrastructure',
-    emoji: '☁️',
-    color: '#06B6D4',
-    bgColor: '#CFFAFE',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&q=80',
-    description: 'Scalable cloud hosting, DevOps infrastructure, and managed services for enterprise-grade reliability.'
+interface Product {
+  id: number
+  name: string
+  tag: string
+  tagClass: string
+  desc: string
+  features: string[]
+  stack: string[]
+  category: {
+    id: number
+    name: string
+    slug: string
+    icon: string
+    color: string
+    description: string
+    image: string
   }
-]
+}
+
+interface Category {
+  id: number
+  name: string
+  slug: string
+  icon: string
+  color: string
+  description: string
+  image: string
+}
 
 export default function Products() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const [activePill, setActivePill] = useState<string>('all')
   const [isPillMode, setIsPillMode] = useState<boolean>(false)
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+
+  // Fetch products and categories from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsData, categoriesData] = await Promise.all([
+          api.getProducts(),
+          api.getCategories()
+        ])
+        
+        const mappedProducts = (productsData.results || productsData).map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          tag: item.tag || 'Product',
+          tagClass: item.tag_class || 'pill-purple',
+          desc: item.desc || item.description || '',
+          features: item.features || [],
+          stack: item.stack || [],
+          category: item.category || { name: 'Uncategorized' }
+        }))
+        
+        setProducts(mappedProducts)
+        setCategories(categoriesData.results || categoriesData || [])
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId)
@@ -244,7 +95,6 @@ export default function Products() {
     setIsPillMode(true)
     setExpandedCategory(categoryId)
 
-    // Scroll to the category card
     setTimeout(() => {
       const ref = categoryRefs.current[categoryId]
       if (ref) {
@@ -257,12 +107,17 @@ export default function Products() {
   }
 
   const getProductsByCategory = (categoryName: string) => {
-    return products.filter(p => p.category === categoryName)
+    return products.filter(p => p.category?.name === categoryName)
   }
 
-  // Get category by id
-  const getCategoryById = (id: string) => {
-    return categories.find(c => c.id === id)
+  if (loading) {
+    return (
+      <div className="products-page">
+        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+          Loading products...
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -298,11 +153,11 @@ export default function Products() {
           </div>
           <div className="products-hero__stats">
             <div className="products-stat">
-              <span className="products-stat__number">19</span>
+              <span className="products-stat__number">{products.length}</span>
               <span className="products-stat__label">Products</span>
             </div>
             <div className="products-stat">
-              <span className="products-stat__number">5</span>
+              <span className="products-stat__number">{categories.length}</span>
               <span className="products-stat__label">Categories</span>
             </div>
             <div className="products-stat">
@@ -327,15 +182,15 @@ export default function Products() {
             {categories.map((category) => (
               <button
                 key={category.id}
-                className={`products-nav__pill ${activePill === category.id ? 'products-nav__pill--active' : ''}`}
-                onClick={() => handlePillClick(category.id)}
-                style={activePill === category.id ? { 
+                className={`products-nav__pill ${activePill === String(category.id) ? 'products-nav__pill--active' : ''}`}
+                onClick={() => handlePillClick(String(category.id))}
+                style={activePill === String(category.id) ? { 
                   background: category.color, 
                   color: '#FFFFFF',
                   borderColor: category.color 
                 } : {}}
               >
-                <span>{category.emoji}</span>
+                <span>{category.icon}</span>
                 {category.name}
               </button>
             ))}
@@ -348,29 +203,28 @@ export default function Products() {
         <div className="container">
           <div className="products-categories-grid">
             {categories.map((category) => {
-              const isExpanded = expandedCategory === category.id
+              const isExpanded = expandedCategory === String(category.id)
               const categoryProducts = getProductsByCategory(category.name)
               const productCount = categoryProducts.length
               
-              // Check if this category should be hidden (pill mode + not the active category)
-              const shouldHide = isPillMode && activePill !== category.id
+              const shouldHide = isPillMode && activePill !== String(category.id)
 
               return (
                 <div 
                   key={category.id} 
-                  ref={(el) => (categoryRefs.current[category.id] = el)}
+                  ref={(el) => (categoryRefs.current[String(category.id)] = el)}
                   className={`products-category-card ${isExpanded ? 'products-category-card--expanded' : ''} ${shouldHide ? 'products-category-card--hidden' : ''}`}
                   style={{ '--category-color': category.color } as React.CSSProperties}
                 >
                   <div 
                     className="products-category-card__header"
-                    onClick={() => toggleCategory(category.id)}
+                    onClick={() => toggleCategory(String(category.id))}
                   >
                     <div className="products-category-card__image">
                       <img src={category.image} alt={category.name} />
                       <div className="products-category-card__overlay" style={{ background: `linear-gradient(135deg, ${category.color}cc, ${category.color}66)` }} />
                       <div className="products-category-card__badge">
-                        <span className="products-category-card__emoji">{category.emoji}</span>
+                        <span className="products-category-card__emoji">{category.icon}</span>
                         <span className="products-category-card__count">{productCount} products</span>
                       </div>
                     </div>
@@ -394,9 +248,9 @@ export default function Products() {
                     <div className="products-category-card__products">
                       <div className="products-category-card__products-grid">
                         {categoryProducts.map((product) => (
-                          <div key={product.name} className="products-category-card__product">
+                          <div key={product.id} className="products-category-card__product">
                             <div className="products-category-card__product-icon">
-                              {product.icon}
+                              <BarChart2 size={26} />
                             </div>
                             <div className="products-category-card__product-content">
                               <div className="products-category-card__product-header">
@@ -405,7 +259,7 @@ export default function Products() {
                               </div>
                               <p className="products-category-card__product-desc">{product.desc}</p>
                               <div className="products-category-card__product-features">
-                                {product.features.slice(0, 3).map(f => (
+                                {product.features.slice(0, 3).map((f: string) => (
                                   <div key={f} className="products-category-card__product-feature">
                                     <CheckCircle2 size={12} color={category.color} />
                                     <span>{f}</span>

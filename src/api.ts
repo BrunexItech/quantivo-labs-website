@@ -8,6 +8,10 @@ export const api = {
   getProduct: (slug: string) => 
     fetch(`${API_BASE}/api/products/${slug}/`).then(res => res.json()),
   
+  // Categories
+  getCategories: () => 
+    fetch(`${API_BASE}/api/categories/`).then(res => res.json()),
+  
   // Services
   getServices: () => 
     fetch(`${API_BASE}/api/services/`).then(res => res.json()),
