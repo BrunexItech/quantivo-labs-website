@@ -79,17 +79,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'quantivo_db'),
-        'USER': os.getenv('DB_USER', 'quantivo_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'quantivo_pass'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+# Database - SQLite for local, PostgreSQL for production (Docker)
+RUNNING_IN_DOCKER = os.getenv('RUNNING_IN_DOCKER', 'False') == 'True'
+
+if RUNNING_IN_DOCKER:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME', 'quantivo_db'),
+            'USER': os.getenv('DB_USER', 'quantivo_user'),
+            'PASSWORD': os.getenv('DB_PASSWORD', 'quantivo_pass'),
+            'HOST': 'db',
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

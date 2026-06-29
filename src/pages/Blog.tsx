@@ -1,122 +1,90 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { 
   ArrowRight, Clock, User, Tag, Calendar, Heart, 
   Share2, Bookmark, Eye, TrendingUp, Zap, Sparkles
 } from 'lucide-react'
+import { api } from '../api'
 
-const posts = [
-  { 
-    id: 1,
-    title: 'How AI Call Centers Are Transforming Customer Service in Africa', 
-    excerpt: 'Intelligent voice agents with multilingual support are reducing support costs by 60% while dramatically improving customer satisfaction across the continent.', 
-    category: 'AI & Automation', 
-    categoryColor: '#7C3AED',
-    author: 'Sophia Ochieng', 
-    authorAvatar: 'SO',
-    date: 'June 2, 2025', 
-    readTime: '6 min read', 
-    featured: true, 
-    image: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=800&q=80',
-    likes: 124,
-    comments: 18,
-  },
-  { 
-    id: 2,
-    title: 'Building a PCI-DSS Compliant PSP in East Africa: Lessons Learned', 
-    excerpt: 'A deep-dive into the technical and regulatory challenges of building payment infrastructure for the East African market, and how we achieved 99.97% uptime.', 
-    category: 'Fintech', 
-    categoryColor: '#2563EB',
-    author: 'David Kamau', 
-    authorAvatar: 'DK',
-    date: 'May 28, 2025', 
-    readTime: '9 min read', 
-    featured: false, 
-    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80',
-    likes: 89,
-    comments: 12,
-  },
-  { 
-    id: 3,
-    title: 'Digital Financial Services: Bringing Unbanked Communities Online', 
-    excerpt: 'How DFS platforms are closing the financial inclusion gap across East Africa — and what it takes to build compliant, scalable agent banking networks.', 
-    category: 'Digital Finance', 
-    categoryColor: '#059669',
-    author: 'Priya Sharma', 
-    authorAvatar: 'PS',
-    date: 'May 22, 2025', 
-    readTime: '7 min read', 
-    featured: false, 
-    image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&q=80',
-    likes: 67,
-    comments: 9,
-  },
-  { 
-    id: 4,
-    title: 'School Management Systems: Digitising Education in Kenya', 
-    excerpt: 'From fee collection via M-Pesa to digital attendance — how technology is transforming school administration across Kenya\'s private education sector.', 
-    category: 'EduTech', 
-    categoryColor: '#D97706',
-    author: 'Grace Wanjiku', 
-    authorAvatar: 'GW',
-    date: 'May 15, 2025', 
-    readTime: '6 min read', 
-    featured: false, 
-    image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80',
-    likes: 45,
-    comments: 6,
-  },
-  { 
-    id: 5,
-    title: 'Hospital Management Systems: The Road to a Paperless Ward', 
-    excerpt: 'After deploying HMS across 5 hospital groups, our team shares the key integration challenges, clinical workflow lessons, and data security practices that matter most.', 
-    category: 'HealthTech', 
-    categoryColor: '#DC2626',
-    author: 'James Otieno', 
-    authorAvatar: 'JO',
-    date: 'May 8, 2025', 
-    readTime: '8 min read', 
-    featured: false, 
-    image: 'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=800&q=80',
-    likes: 78,
-    comments: 14,
-  },
-  { 
-    id: 6,
-    title: 'Why African Businesses Need Offline-First Software Architecture', 
-    excerpt: 'Connectivity challenges across Africa make offline-first design not just nice-to-have, but essential for any software that needs to operate reliably at scale.', 
-    category: 'Engineering', 
-    categoryColor: '#0891B2',
-    author: 'Michael Abubakar', 
-    authorAvatar: 'MA',
-    date: 'April 30, 2025', 
-    readTime: '8 min read', 
-    featured: false, 
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
-    likes: 56,
-    comments: 7,
-  },
-]
-
-const categories = ['All', 'AI & Automation', 'Fintech', 'Digital Finance', 'EduTech', 'HealthTech', 'Engineering']
+interface BlogPost {
+  id: number
+  title: string
+  excerpt: string
+  category: string
+  category_color: string
+  author: string
+  author_avatar: string
+  date: string
+  read_time: string
+  featured: boolean
+  image: string
+  likes: number
+  comments: number
+  slug: string
+}
 
 export default function Blog() {
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All')
   const [hoveredPost, setHoveredPost] = useState<number | null>(null)
 
-  const featured = posts.find(p => p.featured)!
+  // Get unique categories from posts
+  const categories = ['All', ...new Set(posts.map(p => p.category))]
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true)
+        const data = await api.getBlogPosts()
+        const postList = data.results || data || []
+        setPosts(postList)
+      } catch (error) {
+        console.error('Error fetching blog posts:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchPosts()
+  }, [])
+
+  const featured = posts.find(p => p.featured)
   const filteredPosts = activeCategory === 'All' 
     ? posts.filter(p => !p.featured)
     : posts.filter(p => p.category === activeCategory && !p.featured)
 
+  if (loading) {
+    return (
+      <div className="blog-vanguard">
+        <div className="blog-vanguard__container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+          <div style={{ fontSize: '1.2rem', color: '#64748B' }}>Loading posts...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (posts.length === 0) {
+    return (
+      <div className="blog-vanguard">
+        <div className="blog-vanguard__container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+          <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No blog posts found.</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="blog-vanguard">
-      {/* Hero */}
+      {/* Hero - Full Screen with Image */}
       <section className="blog-vanguard__hero">
         <div className="blog-vanguard__hero-bg">
-          <div className="blog-vanguard__hero-orb" />
-          <div className="blog-vanguard__hero-grid" />
+          <img 
+            src="https://cdn.dribbble.com/userupload/43459753/file/original-e0cf96055ca287ace658b46e0a72d7cb.png?resize=1024x768&vertical=center"
+            alt="Blog hero background"
+            className="blog-vanguard__hero-image"
+          />
+          <div className="blog-vanguard__hero-overlay" />
         </div>
         <div className="blog-vanguard__container">
           <motion.div
@@ -141,52 +109,54 @@ export default function Blog() {
       </section>
 
       {/* Featured Article */}
-      <section className="blog-vanguard__featured">
-        <div className="blog-vanguard__container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="blog-vanguard__featured-card"
-          >
-            <div className="blog-vanguard__featured-image">
-              <img src={featured.image} alt={featured.title} />
-              <div className="blog-vanguard__featured-tag">Featured</div>
-            </div>
-            <div className="blog-vanguard__featured-content">
-              <div className="blog-vanguard__featured-meta">
-                <span 
-                  className="blog-vanguard__featured-category"
-                  style={{ background: `${featured.categoryColor}12`, color: featured.categoryColor }}
-                >
-                  {featured.category}
-                </span>
-                <span className="blog-vanguard__featured-date">{featured.date}</span>
+      {featured && (
+        <section className="blog-vanguard__featured">
+          <div className="blog-vanguard__container">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="blog-vanguard__featured-card"
+            >
+              <div className="blog-vanguard__featured-image">
+                <img src={featured.image} alt={featured.title} />
+                <div className="blog-vanguard__featured-tag">Featured</div>
               </div>
-              <h2 className="blog-vanguard__featured-title">{featured.title}</h2>
-              <p className="blog-vanguard__featured-excerpt">{featured.excerpt}</p>
-              <div className="blog-vanguard__featured-footer">
-                <div className="blog-vanguard__featured-author">
-                  <div 
-                    className="blog-vanguard__featured-avatar"
-                    style={{ background: featured.categoryColor }}
+              <div className="blog-vanguard__featured-content">
+                <div className="blog-vanguard__featured-meta">
+                  <span 
+                    className="blog-vanguard__featured-category"
+                    style={{ background: `${featured.category_color}12`, color: featured.category_color }}
                   >
-                    {featured.authorAvatar}
-                  </div>
-                  <div>
-                    <div className="blog-vanguard__featured-author-name">{featured.author}</div>
-                    <div className="blog-vanguard__featured-author-role">CTO, Quantivo Labs</div>
-                  </div>
+                    {featured.category}
+                  </span>
+                  <span className="blog-vanguard__featured-date">{featured.date}</span>
                 </div>
-                <Link to="/blog" className="blog-vanguard__featured-btn">
-                  Read Article <ArrowRight size={16} />
-                </Link>
+                <h2 className="blog-vanguard__featured-title">{featured.title}</h2>
+                <p className="blog-vanguard__featured-excerpt">{featured.excerpt}</p>
+                <div className="blog-vanguard__featured-footer">
+                  <div className="blog-vanguard__featured-author">
+                    <div 
+                      className="blog-vanguard__featured-avatar"
+                      style={{ background: featured.category_color }}
+                    >
+                      {featured.author_avatar}
+                    </div>
+                    <div>
+                      <div className="blog-vanguard__featured-author-name">{featured.author}</div>
+                      <div className="blog-vanguard__featured-author-role">Contributor</div>
+                    </div>
+                  </div>
+                  <Link to={`/blog/${featured.slug}`} className="blog-vanguard__featured-btn">
+                    Read Article <ArrowRight size={16} />
+                  </Link>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Category Filter */}
       <section className="blog-vanguard__filter">
@@ -225,7 +195,7 @@ export default function Blog() {
                     <img src={post.image} alt={post.title} />
                     <span 
                       className="blog-vanguard__post-category"
-                      style={{ background: post.categoryColor }}
+                      style={{ background: post.category_color }}
                     >
                       {post.category}
                     </span>
@@ -237,18 +207,18 @@ export default function Blog() {
                       <div className="blog-vanguard__post-author">
                         <div 
                           className="blog-vanguard__post-avatar"
-                          style={{ background: post.categoryColor }}
+                          style={{ background: post.category_color }}
                         >
-                          {post.authorAvatar}
+                          {post.author_avatar}
                         </div>
                         <span className="blog-vanguard__post-author-name">{post.author}</span>
                       </div>
                       <div className="blog-vanguard__post-stats">
-                        <span><Clock size={12} /> {post.readTime}</span>
+                        <span><Clock size={12} /> {post.read_time}</span>
                         <span><Heart size={12} /> {post.likes}</span>
                       </div>
                     </div>
-                    <Link to="/blog" className="blog-vanguard__post-link">
+                    <Link to={`/blog/${post.slug}`} className="blog-vanguard__post-link">
                       Read More <ArrowRight size={14} />
                     </Link>
                   </div>
@@ -306,42 +276,35 @@ export default function Blog() {
           padding: 0 28px;
         }
 
-        /* ---- Hero ---- */
+        /* ---- Hero Full Screen with Image ---- */
         .blog-vanguard__hero {
           position: relative;
-          padding: 5rem 0 4rem;
+          min-height: 100vh;
+          width: 100%;
+          display: flex;
+          align-items: center;
           overflow: hidden;
-          background: linear-gradient(160deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .blog-vanguard__hero-bg {
           position: absolute;
           inset: 0;
-          pointer-events: none;
+          z-index: 0;
+          width: 100%;
+          height: 100%;
         }
 
-        .blog-vanguard__hero-orb {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 500px;
-          height: 500px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.06), transparent 70%);
-          border-radius: 50%;
-          filter: blur(80px);
+        .blog-vanguard__hero-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
-        .blog-vanguard__hero-grid {
+        .blog-vanguard__hero-overlay {
           position: absolute;
           inset: 0;
-          background-image: 
-            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-          background-size: 60px 60px;
-          mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
-          -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+          background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.75) 100%);
+          z-index: 1;
         }
 
         .blog-vanguard__hero-content {
@@ -350,6 +313,7 @@ export default function Blog() {
           text-align: center;
           max-width: 700px;
           margin: 0 auto;
+          padding: 0 20px;
         }
 
         .blog-vanguard__hero-badge {
@@ -821,6 +785,9 @@ export default function Blog() {
           .blog-vanguard__grid {
             grid-template-columns: repeat(2, 1fr);
           }
+          .blog-vanguard__hero {
+            min-height: 80vh;
+          }
         }
 
         @media (max-width: 768px) {
@@ -828,7 +795,7 @@ export default function Blog() {
             padding: 0 16px;
           }
           .blog-vanguard__hero {
-            padding: 3.5rem 0;
+            min-height: 70vh;
           }
           .blog-vanguard__hero-title {
             font-size: 2rem;
@@ -849,6 +816,9 @@ export default function Blog() {
         }
 
         @media (max-width: 480px) {
+          .blog-vanguard__hero {
+            min-height: 60vh;
+          }
           .blog-vanguard__hero-title {
             font-size: 1.6rem;
           }

@@ -10,4 +10,9 @@ urlpatterns = [
     path('partners/', include('partners.urls')),
     path('contact/', include('contact.urls')),
     path('industries/', include('industries.urls')),
+    path('blog/', include('blog.urls')),
 ]
+
+
+   
+    
