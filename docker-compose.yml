@@ -18,22 +18,14 @@ services:
       retries: 5
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
     container_name: quantivo_backend
-    ports:
-      - "8009:8000"
-    env_file:
-      - ./backend/.env
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py createsuperuser --noinput --email quantivo.itech@gmail.com || true &&
-             gunicorn --bind 0.0.0.0:8000 config.wsgi:application"
     volumes:
       - ./backend:/app
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8009:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -42,7 +34,8 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://38.242.200.152:8009/api
     container_name: quantivo_frontend
     ports:
       - "8089:80"
@@ -52,5 +45,3 @@ services:
 
 volumes:
   postgres_data:
-  static_volume:
-  media_volume:

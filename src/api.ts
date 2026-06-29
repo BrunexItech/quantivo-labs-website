@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:8008/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://38.242.200.152:8009/api';
 
 export const api = {
   // Products
