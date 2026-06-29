@@ -54,11 +54,26 @@ export default function Blog() {
     ? posts.filter(p => !p.featured)
     : posts.filter(p => p.category === activeCategory && !p.featured)
 
+  // Hero section - Full screen image only, no text
+  const heroSection = (
+    <section className="blog-vanguard__hero">
+      <div className="blog-vanguard__hero-bg">
+        <img 
+          src="https://images.unsplash.com/photo-1563986768711-b3bde3dc821e"
+          alt="Blog hero background"
+          className="blog-vanguard__hero-image"
+        />
+        <div className="blog-vanguard__hero-overlay" />
+      </div>
+    </section>
+  )
+
   if (loading) {
     return (
       <div className="blog-vanguard">
-        <div className="blog-vanguard__container" style={{ padding: '4rem 0', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.2rem', color: '#64748B' }}>Loading posts...</div>
+        {heroSection}
+        <div className="blog-vanguard__container" style={{ padding: '2rem 0', textAlign: 'center' }}>
+          <div style={{ fontSize: '1.1rem', color: '#64748B' }}>Loading posts...</div>
         </div>
       </div>
     )
@@ -67,7 +82,8 @@ export default function Blog() {
   if (posts.length === 0) {
     return (
       <div className="blog-vanguard">
-        <div className="blog-vanguard__container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+        {heroSection}
+        <div className="blog-vanguard__container" style={{ padding: '2rem 0', textAlign: 'center' }}>
           <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No blog posts found.</div>
         </div>
       </div>
@@ -76,37 +92,8 @@ export default function Blog() {
 
   return (
     <div className="blog-vanguard">
-      {/* Hero - Full Screen with Image */}
-      <section className="blog-vanguard__hero">
-        <div className="blog-vanguard__hero-bg">
-          <img 
-            src="https://cdn.dribbble.com/userupload/43459753/file/original-e0cf96055ca287ace658b46e0a72d7cb.png?resize=1024x768&vertical=center"
-            alt="Blog hero background"
-            className="blog-vanguard__hero-image"
-          />
-          <div className="blog-vanguard__hero-overlay" />
-        </div>
-        <div className="blog-vanguard__container">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="blog-vanguard__hero-content"
-          >
-            <div className="blog-vanguard__hero-badge">
-              <Sparkles size={14} />
-              <span>Insights & Perspectives</span>
-            </div>
-            <h1 className="blog-vanguard__hero-title">
-              Thoughts from the <br />
-              <span className="blog-vanguard__hero-accent">Technology Frontier</span>
-            </h1>
-            <p className="blog-vanguard__hero-desc">
-              Perspectives on AI, fintech, digital finance, healthcare IT, and the future of technology in Africa and beyond.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {/* Hero - Full Screen Image Only */}
+      {heroSection}
 
       {/* Featured Article */}
       {featured && (
@@ -276,7 +263,7 @@ export default function Blog() {
           padding: 0 28px;
         }
 
-        /* ---- Hero Full Screen with Image ---- */
+        /* ---- Hero Full Screen with Image Only ---- */
         .blog-vanguard__hero {
           position: relative;
           min-height: 100vh;
@@ -303,62 +290,8 @@ export default function Blog() {
         .blog-vanguard__hero-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.75) 100%);
+          background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.3) 50%, rgba(15, 23, 42, 0.6) 100%);
           z-index: 1;
-        }
-
-        .blog-vanguard__hero-content {
-          position: relative;
-          z-index: 10;
-          text-align: center;
-          max-width: 700px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-
-        .blog-vanguard__hero-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.4rem 1.25rem;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 100px;
-          font-size: 0.7rem;
-          font-weight: 600;
-          color: #94A3B8;
-          text-transform: uppercase;
-          letter-spacing: 0.06em;
-          margin-bottom: 1.25rem;
-        }
-
-        .blog-vanguard__hero-badge svg {
-          color: #FBBF24;
-        }
-
-        .blog-vanguard__hero-title {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: clamp(2.4rem, 4vw, 3.6rem);
-          font-weight: 800;
-          color: #F1F5F9;
-          line-height: 1.1;
-          letter-spacing: -0.03em;
-          margin-bottom: 1rem;
-        }
-
-        .blog-vanguard__hero-accent {
-          background: linear-gradient(135deg, #818CF8 0%, #F472B6 50%, #FBBF24 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .blog-vanguard__hero-desc {
-          font-size: 1.05rem;
-          color: #94A3B8;
-          max-width: 520px;
-          margin: 0 auto;
-          line-height: 1.7;
         }
 
         /* ---- Featured ---- */
@@ -797,9 +730,6 @@ export default function Blog() {
           .blog-vanguard__hero {
             min-height: 70vh;
           }
-          .blog-vanguard__hero-title {
-            font-size: 2rem;
-          }
           .blog-vanguard__grid {
             grid-template-columns: 1fr;
           }
@@ -818,9 +748,6 @@ export default function Blog() {
         @media (max-width: 480px) {
           .blog-vanguard__hero {
             min-height: 60vh;
-          }
-          .blog-vanguard__hero-title {
-            font-size: 1.6rem;
           }
           .blog-vanguard__post-image {
             height: 140px;
