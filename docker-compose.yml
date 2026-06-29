@@ -22,6 +22,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: quantivo_backend
+    env_file:
+      - ./backend/.env
     command: >
       sh -c "python manage.py migrate &&
              python manage.py createsuperuser --noinput --email quantivo.itech@gmail.com || true &&
@@ -30,22 +32,6 @@ services:
       - ./backend:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-    environment:
-      - DEBUG=False
-      - DB_NAME=quantivo_db
-      - DB_USER=quantivo_user
-      - DB_PASSWORD=quantivo_pass
-      - DB_HOST=db
-      - DB_PORT=5432
-      - SECRET_KEY=${SECRET_KEY}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-      - DJANGO_SUPERUSER_EMAIL=quantivo.itech@gmail.com
-      - DJANGO_SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD}
-      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
-      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
-      - EMAIL_HOST=smtp.gmail.com
-      - EMAIL_PORT=587
-      - EMAIL_USE_TLS=True
     depends_on:
       db:
         condition: service_healthy
