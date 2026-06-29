@@ -22,6 +22,7 @@ services:
     container_name: quantivo_backend
     volumes:
       - ./backend:/app
+      - static_volume:/app/staticfiles
     env_file:
       - ./backend/.env
     ports:
@@ -37,6 +38,8 @@ services:
       args:
         - VITE_API_URL=http://38.242.200.152:8009/api
     container_name: quantivo_frontend
+    volumes:
+      - static_volume:/usr/share/nginx/html/static
     ports:
       - "8086:80"
     depends_on:
@@ -45,3 +48,4 @@ services:
 
 volumes:
   postgres_data:
+  static_volume:
