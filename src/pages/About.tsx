@@ -15,7 +15,7 @@ const values = [
 const team = [
   { name: 'John Wati', role: 'Director', dept: 'Directorship' },
   { name: 'Ali Amour', role: 'Director', dept: 'Directorship' },
-  { name: 'Yusuf', role: 'Director', dept: 'Directorship' },
+  { name: 'Yusuf Hamisi', role: 'Director', dept: 'Directorship' },
   { name: 'Sophia Ochieng', role: 'Chief Technology Officer', dept: 'Executive Leadership' },
   { name: 'David Kamau', role: 'Chief Operations Officer', dept: 'Executive Leadership' },
   { name: 'Priya Sharma', role: 'Head of AI & Machine Learning', dept: 'AI Specialists' },

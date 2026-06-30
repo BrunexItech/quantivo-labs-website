@@ -87,7 +87,7 @@ export default function Contact() {
 
   const contactInfo: ContactInfo[] = [
     { icon: MapPin, label: 'Visit Us', value: 'CPF Building, Mama Ngina Street, Opposite City Hall Annex, 5th Floor, Nairobi, Kenya' },
-    { icon: Phone, label: 'Call Us', value: '+254 726339982/+254 726157375' },
+    { icon: Phone, label: 'Call Us', value: '+254 726339982/ +254 726157375' },
     { icon: Mail, label: 'Email Us', value: 'info@quantivolabs.tech' },
   ]
 
@@ -104,7 +104,7 @@ export default function Contact() {
         {/* Background Image - Static */}
         <div className="contact-premium__hero-image">
           <img 
-            src="https://images.unsplash.com/photo-1512944159308-fbe53a63b779?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src="https://plus.unsplash.com/premium_photo-1661763911173-f2f7becc70b0"
             alt="Contact Us"
             className="contact-premium__hero-img"
           />
@@ -450,11 +450,11 @@ export default function Contact() {
 
         .contact-premium__hero {
           position: relative;
-          min-height: 85vh;
+          min-height: 100vh; /* ← Change from 85vh to 100vh */
           display: flex;
           align-items: center;
           overflow: hidden;
-          padding-top: 72px;
+          padding-top: 0; /* ← Remove or adjust padding */
         }
 
         /* ---- Background Image ---- */
