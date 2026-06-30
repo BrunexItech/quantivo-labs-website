@@ -1,26 +1,141 @@
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Phone } from 'lucide-react'
+import { 
+  ArrowRight, ChevronLeft, ChevronRight, 
+  GraduationCap, Landmark, Hospital, BarChart2, PhoneCall,
+  Sparkles, CheckCircle2
+} from 'lucide-react'
 
-export default function Hero() {
+const slides = [
+  {
+    id: 1,
+    title: 'School Management',
+    tagline: 'Digitising Education, One School at a Time',
+    subtitle: 'From fees to timetables — fully automated',
+    description: 'End-to-end school administration covering M-Pesa fee collection, digital attendance, timetabling, exam results, and parent communication portals.',
+    icon: <GraduationCap size={48} />,
+    color: '#10B981',
+    gradient: 'linear-gradient(135deg, #0F172A 0%, #064E3B 100%)',
+    bgPattern: 'radial-gradient(ellipse at 70% 30%, rgba(16, 185, 129, 0.08) 0%, transparent 70%)',
+    cta: 'Explore School Management',
+    ctaLink: '/products',
+    features: ['M-Pesa Fee Collection', 'Digital Attendance', 'Exam Management', 'Parent Portal']
+  },
+  {
+    id: 2,
+    title: 'DFS Solutions',
+    tagline: 'Digital Financial Services for Africa',
+    subtitle: 'Agent banking, mobile lending & digital wallets',
+    description: 'A comprehensive digital financial services platform integrating mobile money, digital lending, and agent banking networks for the modern African financial ecosystem.',
+    icon: <Landmark size={48} />,
+    color: '#4F46E5',
+    gradient: 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%)',
+    bgPattern: 'radial-gradient(ellipse at 30% 70%, rgba(79, 70, 229, 0.08) 0%, transparent 70%)',
+    cta: 'Explore DFS Solutions',
+    ctaLink: '/products',
+    features: ['Mobile Money Integration', 'Agent Banking', 'Digital Lending', 'KYC & Compliance']
+  },
+  {
+    id: 3,
+    title: 'Hospital Management',
+    tagline: 'Paperless, Seamless, Intelligent',
+    subtitle: 'Complete HMS for hospitals & clinics',
+    description: 'End-to-end hospital operations covering EMR, OPD/IPD, pharmacy, laboratory, insurance billing, and real-time financial reporting.',
+    icon: <Hospital size={48} />,
+    color: '#E11D48',
+    gradient: 'linear-gradient(135deg, #0F172A 0%, #4C0519 100%)',
+    bgPattern: 'radial-gradient(ellipse at 60% 40%, rgba(225, 29, 72, 0.08) 0%, transparent 70%)',
+    cta: 'Explore Hospital Management',
+    ctaLink: '/products',
+    features: ['Electronic Medical Records', 'Pharmacy & Lab', 'Insurance Billing', 'Multi-Branch Reporting']
+  },
+  {
+    id: 4,
+    title: 'QuantivoCRM',
+    tagline: 'AI-Powered CRM for African Enterprises',
+    subtitle: 'The first CRM built for Africa',
+    description: 'Manage leads, deals, and customer journeys with M-Pesa integration, multilingual AI follow-ups, and a 360° client view — all in one platform.',
+    icon: <BarChart2 size={48} />,
+    color: '#2563EB',
+    gradient: 'linear-gradient(135deg, #0F172A 0%, #172554 100%)',
+    bgPattern: 'radial-gradient(ellipse at 50% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 70%)',
+    cta: 'Explore QuantivoCRM',
+    ctaLink: '/products',
+    features: ['360° Customer View', 'AI Follow-ups', 'Sales Pipeline', 'M-Pesa Integration']
+  },
+  {
+    id: 5,
+    title: 'AI Call Center',
+    tagline: 'Intelligent Customer Service Automation',
+    subtitle: 'Multilingual AI voice agents for Africa',
+    description: 'Handle high call volumes with AI-powered voice agents that understand and respond naturally in English and Swahili — reducing costs and improving satisfaction.',
+    icon: <PhoneCall size={48} />,
+    color: '#7C3AED',
+    gradient: 'linear-gradient(135deg, #0F172A 0%, #2E1065 100%)',
+    bgPattern: 'radial-gradient(ellipse at 40% 60%, rgba(124, 58, 237, 0.08) 0%, transparent 70%)',
+    cta: 'Explore AI Call Center',
+    ctaLink: '/products',
+    features: ['Voice AI Agents (EN + SW)', 'Sentiment Analysis', 'Smart Escalation', 'Quality Dashboard']
+  },
+]
+
+export default function HeroSlider() {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [direction, setDirection] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const currentSlide = slides[currentIndex]
+  const totalSlides = slides.length
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (isPaused) return
+    const timer = setTimeout(() => {
+      setDirection(1)
+      setCurrentIndex((prev) => (prev + 1) % totalSlides)
+    }, 6000)
+    return () => clearTimeout(timer)
+  }, [currentIndex, isPaused, totalSlides])
+
+  const nextSlide = () => {
+    setDirection(1)
+    setCurrentIndex((prev) => (prev + 1) % totalSlides)
+  }
+
+  const prevSlide = () => {
+    setDirection(-1)
+    setCurrentIndex((prev) => (prev - 1 + totalSlides) % totalSlides)
+  }
+
+  const goToSlide = (index: number) => {
+    setDirection(index > currentIndex ? 1 : -1)
+    setCurrentIndex(index)
+  }
+
   return (
-    <section className="hero-welcome">
-      {/* Premium Background */}
-      <div className="hero-welcome__bg">
-        <div className="hero-welcome__gradient" />
-        <div className="hero-welcome__mesh" />
-        <div className="hero-welcome__orb hero-welcome__orb--1" />
-        <div className="hero-welcome__orb hero-welcome__orb--2" />
-        <div className="hero-welcome__orb hero-welcome__orb--3" />
-        <div className="hero-welcome__orb hero-welcome__orb--4" />
+    <div 
+      className="hero-slider-premium"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Background */}
+      <div 
+        className="hero-slider-premium__bg"
+        style={{ background: currentSlide.gradient }}
+      >
+        <div className="hero-slider-premium__pattern" style={{ background: currentSlide.bgPattern }} />
+        <div className="hero-slider-premium__orb hero-slider-premium__orb--1" />
+        <div className="hero-slider-premium__orb hero-slider-premium__orb--2" />
+        <div className="hero-slider-premium__orb hero-slider-premium__orb--3" />
       </div>
 
       {/* Floating Particles */}
-      <div className="hero-welcome__particles">
-        {[...Array(15)].map((_, i) => (
+      <div className="hero-slider-premium__particles">
+        {[...Array(25)].map((_, i) => (
           <div
             key={i}
-            className="hero-welcome__particle"
+            className="hero-slider-premium__particle"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -28,593 +143,602 @@ export default function Hero() {
               height: `${Math.random() * 4 + 2}px`,
               animationDelay: `${Math.random() * 10}s`,
               animationDuration: `${Math.random() * 15 + 10}s`,
+              background: currentSlide.color,
+              opacity: 0.15,
             }}
           />
         ))}
       </div>
 
-      <div className="hero-welcome__container">
-        <div className="hero-welcome__grid">
-          {/* Content - Left Column */}
-          <div className="hero-welcome__content">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="hero-welcome__tag"
-            >
-              <span className="hero-welcome__tag-dot" />
-              <span>Welcome to Quantivo Labs</span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="hero-welcome__title"
-            >
-              Building Africa's
-              <span className="hero-welcome__title-highlight">
-                Digital Future
-              </span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="hero-welcome__desc"
-            >
-              We design and deliver AI-powered platforms that automate operations, 
-              optimize performance, and enable intelligent growth for businesses 
-              and institutions across Africa.
-            </motion.p>
-          </div>
-
-          {/* Visual - Right Column */}
+      <div className="hero-slider-premium__container">
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="hero-welcome__visual"
+            key={currentIndex}
+            initial={{ opacity: 0, x: direction > 0 ? 80 : -80 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction > 0 ? -80 : 80 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="hero-slider-premium__slide"
           >
-            <div className="hero-welcome__visual-container">
-              {/* Outer Glow */}
-              <div className="hero-welcome__glow-ring" />
-
-              {/* Rotating Rings */}
-              <motion.div
-                className="hero-welcome__ring hero-welcome__ring--1"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
-              >
-                <div className="hero-welcome__ring-dash" />
-                <div className="hero-welcome__ring-dash hero-welcome__ring-dash--2" />
-                <div className="hero-welcome__ring-dash hero-welcome__ring-dash--3" />
-              </motion.div>
-
-              <motion.div
-                className="hero-welcome__ring hero-welcome__ring--2"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
-              >
-                <div className="hero-welcome__ring-dash" />
-                <div className="hero-welcome__ring-dash hero-welcome__ring-dash--2" />
-                <div className="hero-welcome__ring-dash hero-welcome__ring-dash--3" />
-              </motion.div>
-
-              <motion.div
-                className="hero-welcome__ring hero-welcome__ring--3"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
-              >
-                <div className="hero-welcome__ring-dash" />
-                <div className="hero-welcome__ring-dash hero-welcome__ring-dash--2" />
-                <div className="hero-welcome__ring-dash hero-welcome__ring-dash--3" />
-              </motion.div>
-
-              {/* Center Logo with Glow */}
-              <div className="hero-welcome__center">
-                <div className="hero-welcome__center-glow" />
-                <div className="hero-welcome__center-box">
-                  <span className="hero-welcome__center-text">Q</span>
-                </div>
+            {/* Left: Content */}
+            <div className="hero-slider-premium__content">
+              {/* Badge */}
+              <div className="hero-slider-premium__badge">
+                <Sparkles size={14} />
+                <span>Featured Product</span>
               </div>
 
-              {/* Orbiting Dots with Color */}
-              {[...Array(6)].map((_, i) => {
-                const angle = (i / 6) * Math.PI * 2
-                const radius = 155
-                return (
-                  <motion.div
-                    key={i}
-                    className="hero-welcome__orbit-dot"
-                    style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transformOrigin: '0 0',
-                    }}
-                    animate={{
-                      rotate: [0, 360],
-                    }}
-                    transition={{
-                      duration: 20 + i * 0.5,
-                      repeat: Infinity,
-                      ease: 'linear',
-                    }}
-                  >
-                    <div
-                      className="hero-welcome__orbit-dot-inner"
-                      style={{
-                        transform: `rotate(${angle}rad) translateX(${radius}px)`,
-                      }}
-                    />
-                  </motion.div>
-                )
-              })}
+              {/* Product Name */}
+              <div className="hero-slider-premium__product">
+                <div 
+                  className="hero-slider-premium__icon"
+                  style={{ background: `${currentSlide.color}20`, color: currentSlide.color }}
+                >
+                  {currentSlide.icon}
+                </div>
+                <span className="hero-slider-premium__product-name">{currentSlide.title}</span>
+              </div>
+
+              {/* Tagline */}
+              <h1 className="hero-slider-premium__title">
+                {currentSlide.tagline}
+              </h1>
+
+              {/* Subtitle */}
+              <p className="hero-slider-premium__subtitle">
+                {currentSlide.subtitle}
+              </p>
+
+              {/* Description */}
+              <p className="hero-slider-premium__desc">
+                {currentSlide.description}
+              </p>
+
+              {/* Features */}
+              <div className="hero-slider-premium__features">
+                {currentSlide.features.map((feature, i) => (
+                  <div key={i} className="hero-slider-premium__feature">
+                    <CheckCircle2 size={16} color={currentSlide.color} />
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <Link to={currentSlide.ctaLink} className="hero-slider-premium__cta">
+                {currentSlide.cta}
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+
+            {/* Right: Visual */}
+            <div className="hero-slider-premium__visual">
+              <div className="hero-slider-premium__visual-container">
+                {/* Large Icon Display */}
+                <div 
+                  className="hero-slider-premium__visual-icon"
+                  style={{ 
+                    background: `${currentSlide.color}15`,
+                    borderColor: `${currentSlide.color}30`,
+                    color: currentSlide.color,
+                  }}
+                >
+                  {currentSlide.icon}
+                </div>
+
+                {/* Floating Shapes */}
+                <div 
+                  className="hero-slider-premium__shape hero-slider-premium__shape--1"
+                  style={{ background: currentSlide.color }}
+                />
+                <div 
+                  className="hero-slider-premium__shape hero-slider-premium__shape--2"
+                  style={{ background: currentSlide.color }}
+                />
+                <div 
+                  className="hero-slider-premium__shape hero-slider-premium__shape--3"
+                  style={{ background: currentSlide.color }}
+                />
+
+                {/* Glow Ring */}
+                <div 
+                  className="hero-slider-premium__glow"
+                  style={{ background: `radial-gradient(circle, ${currentSlide.color}20, transparent 70%)` }}
+                />
+              </div>
             </div>
           </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Navigation */}
+      <div className="hero-slider-premium__nav">
+        <button 
+          onClick={prevSlide} 
+          className="hero-slider-premium__arrow hero-slider-premium__arrow--left"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft size={24} />
+        </button>
+
+        <div className="hero-slider-premium__dots">
+          {slides.map((slide, index) => (
+            <button
+              key={slide.id}
+              onClick={() => goToSlide(index)}
+              className={`hero-slider-premium__dot ${index === currentIndex ? 'hero-slider-premium__dot--active' : ''}`}
+              style={{
+                background: index === currentIndex ? slide.color : 'rgba(255,255,255,0.15)',
+                width: index === currentIndex ? '40px' : '10px',
+              }}
+            />
+          ))}
         </div>
 
-        {/* ===== BUTTONS - BELOW THE VISUAL ===== */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="hero-welcome__actions-wrapper"
+        <button 
+          onClick={nextSlide} 
+          className="hero-slider-premium__arrow hero-slider-premium__arrow--right"
+          aria-label="Next slide"
         >
-          <div className="hero-welcome__actions">
-            <Link to="/products" className="hero-welcome__btn-primary">
-              Explore Solutions
-              <ArrowRight size={18} className="hero-welcome__btn-icon" />
-            </Link>
-            <Link to="/contact" className="hero-welcome__btn-secondary">
-              <Phone size={18} />
-              Talk to Us
-            </Link>
-          </div>
-        </motion.div>
+          <ChevronRight size={24} />
+        </button>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="hero-slider-premium__progress">
+        <div 
+          className="hero-slider-premium__progress-bar"
+          style={{
+            width: `${((currentIndex + 1) / totalSlides) * 100}%`,
+            background: currentSlide.color,
+          }}
+        />
+      </div>
+
+      {/* Slide Counter */}
+      <div className="hero-slider-premium__counter">
+        <span className="hero-slider-premium__counter-current">
+          {String(currentIndex + 1).padStart(2, '0')}
+        </span>
+        <span className="hero-slider-premium__counter-total">
+          / {String(totalSlides).padStart(2, '0')}
+        </span>
       </div>
 
       <style>{`
         /* ================================================================
-           HERO WELCOME - BUTTONS BELOW VISUAL WITH SPACING
+           HERO SLIDER PREMIUM - WITH AUTO-PLAY
            ================================================================ */
 
-        .hero-welcome {
+        .hero-slider-premium {
           position: relative;
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
+          width: 100%;
+          height: 100vh;
           overflow: hidden;
-          background: #0b1120;
           padding-top: 72px;
         }
 
-        /* ---- Premium Background ---- */
-        .hero-welcome__bg {
+        .hero-slider-premium__bg {
           position: absolute;
           inset: 0;
+          z-index: 0;
+          transition: background 0.8s ease;
+        }
+
+        .hero-slider-premium__pattern {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
           pointer-events: none;
-          overflow: hidden;
         }
 
-        .hero-welcome__gradient {
-          position: absolute;
-          inset: 0;
-          background: 
-            radial-gradient(ellipse at 20% 50%, rgba(37, 99, 235, 0.06) 0%, transparent 60%),
-            radial-gradient(ellipse at 80% 50%, rgba(124, 58, 237, 0.04) 0%, transparent 60%),
-            radial-gradient(ellipse at 50% 80%, rgba(20, 184, 166, 0.02) 0%, transparent 40%);
-        }
-
-        .hero-welcome__mesh {
-          position: absolute;
-          inset: 0;
-          background-image: 
-            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-          background-size: 80px 80px;
-          mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
-          -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
-        }
-
-        .hero-welcome__orb {
+        .hero-slider-premium__orb {
           position: absolute;
           border-radius: 50%;
-          filter: blur(100px);
+          filter: blur(120px);
           pointer-events: none;
+          z-index: 1;
         }
 
-        .hero-welcome__orb--1 {
-          top: 20%;
-          left: -10%;
+        .hero-slider-premium__orb--1 {
+          top: -20%;
+          right: -10%;
           width: 500px;
           height: 500px;
-          background: rgba(37, 99, 235, 0.08);
-          animation: welcomeOrbFloat 20s ease-in-out infinite;
+          background: rgba(37, 99, 235, 0.06);
+          animation: premiumOrbFloat 25s ease-in-out infinite;
         }
 
-        .hero-welcome__orb--2 {
-          bottom: 20%;
-          right: -10%;
-          width: 450px;
-          height: 450px;
-          background: rgba(124, 58, 237, 0.06);
-          animation: welcomeOrbFloat 25s ease-in-out infinite reverse;
+        .hero-slider-premium__orb--2 {
+          bottom: -20%;
+          left: -10%;
+          width: 400px;
+          height: 400px;
+          background: rgba(124, 58, 237, 0.04);
+          animation: premiumOrbFloat 30s ease-in-out infinite reverse;
         }
 
-        .hero-welcome__orb--3 {
+        .hero-slider-premium__orb--3 {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 500px;
-          height: 500px;
-          background: rgba(20, 184, 166, 0.03);
-          animation: welcomeOrbPulse 15s ease-in-out infinite;
+          width: 600px;
+          height: 600px;
+          background: rgba(16, 185, 129, 0.03);
+          animation: premiumOrbPulse 20s ease-in-out infinite;
         }
 
-        .hero-welcome__orb--4 {
-          top: 10%;
-          right: 20%;
-          width: 300px;
-          height: 300px;
-          background: rgba(245, 158, 11, 0.03);
-          animation: welcomeOrbFloat 22s ease-in-out infinite 3s;
-        }
-
-        @keyframes welcomeOrbFloat {
+        @keyframes premiumOrbFloat {
           0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(40px, -40px) scale(1.05); }
-          66% { transform: translate(-40px, 40px) scale(0.95); }
+          33% { transform: translate(50px, -50px) scale(1.1); }
+          66% { transform: translate(-50px, 50px) scale(0.9); }
         }
 
-        @keyframes welcomeOrbPulse {
-          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-          50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.7; }
+        @keyframes premiumOrbPulse {
+          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+          50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
         }
 
-        /* ---- Particles ---- */
-        .hero-welcome__particles {
+        .hero-slider-premium__particles {
           position: absolute;
           inset: 0;
+          z-index: 2;
           pointer-events: none;
           overflow: hidden;
         }
 
-        .hero-welcome__particle {
+        .hero-slider-premium__particle {
           position: absolute;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.06);
-          animation: welcomeParticleFloat 20s ease-in-out infinite;
+          animation: premiumParticleFloat 20s ease-in-out infinite;
         }
 
-        @keyframes welcomeParticleFloat {
-          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-          50% { transform: translate(-20px, -30px) scale(1.5); opacity: 0.6; }
+        @keyframes premiumParticleFloat {
+          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+          50% { transform: translate(-30px, -40px) scale(1.8); opacity: 0.4; }
         }
 
-        /* ---- Container ---- */
-        .hero-welcome__container {
+        .hero-slider-premium__container {
           position: relative;
           z-index: 10;
           width: 100%;
-          padding: 0 28px;
-          max-width: 1240px;
+          height: calc(100% - 72px);
+          display: flex;
+          align-items: center;
+          padding: 0 60px;
+          max-width: 1400px;
           margin: 0 auto;
         }
 
-        .hero-welcome__grid {
+        .hero-slider-premium__slide {
           display: grid;
+          grid-template-columns: 1fr 1fr;
           gap: 4rem;
           align-items: center;
+          width: 100%;
         }
 
-        @media (min-width: 1024px) {
-          .hero-welcome__grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 5rem;
-          }
-          .hero-welcome__content {
-            order: 1;
-          }
-          .hero-welcome__visual {
-            order: 2;
-          }
-        }
-
-        /* ---- Content ---- */
-        .hero-welcome__content {
+        /* ---- Left Content ---- */
+        .hero-slider-premium__content {
           display: flex;
           flex-direction: column;
-          gap: 1.5rem;
+          gap: 1.25rem;
+          max-width: 620px;
         }
 
-        .hero-welcome__tag {
+        .hero-slider-premium__badge {
           display: inline-flex;
           align-items: center;
-          gap: 0.75rem;
-          padding: 0.6rem 1.5rem;
-          background: rgba(37, 99, 235, 0.08);
-          border: 1px solid rgba(37, 99, 235, 0.12);
+          gap: 0.5rem;
+          padding: 0.3rem 1rem;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 100px;
+          font-size: 0.65rem;
+          font-weight: 600;
+          color: #94A3B8;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
           width: fit-content;
         }
 
-        .hero-welcome__tag-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: #3B82F6;
-          animation: welcomeDotPulse 2s ease-in-out infinite;
+        .hero-slider-premium__badge svg {
+          color: #FBBF24;
         }
 
-        @keyframes welcomeDotPulse {
-          0%, 100% { opacity: 0.4; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.3); }
+        .hero-slider-premium__product {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
         }
 
-        .hero-welcome__tag span {
-          font-size: 0.9rem;
-          font-weight: 500;
-          color: #93BBFC;
-          letter-spacing: 0.04em;
+        .hero-slider-premium__icon {
+          width: 56px;
+          height: 56px;
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
         }
 
-        .hero-welcome__title {
-          font-size: clamp(2.4rem, 4.5vw, 4rem);
+        .hero-slider-premium__icon svg {
+          width: 28px;
+          height: 28px;
+        }
+
+        .hero-slider-premium__product-name {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.5);
+          letter-spacing: 0.02em;
+        }
+
+        .hero-slider-premium__title {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: clamp(2.4rem, 4vw, 3.8rem);
           font-weight: 800;
           color: #F1F5F9;
           line-height: 1.08;
           letter-spacing: -0.03em;
         }
 
-        .hero-welcome__title-highlight {
-          background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #F472B6 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .hero-welcome__desc {
-          font-size: clamp(0.95rem, 1.1vw, 1.05rem);
-          color: #94A3B8;
-          max-width: 520px;
-          line-height: 1.8;
-        }
-
-        /* ---- Visual ---- */
-        .hero-welcome__visual {
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .hero-welcome__visual-container {
-          position: relative;
-          width: 100%;
-          max-width: 420px;
-          aspect-ratio: 1/1;
-        }
-
-        .hero-welcome__glow-ring {
-          position: absolute;
-          inset: -30px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
-          filter: blur(40px);
-        }
-
-        .hero-welcome__ring {
-          position: absolute;
-          inset: 0;
-          border-radius: 50%;
-          border: 1px solid;
-        }
-
-        .hero-welcome__ring--1 {
-          border-color: rgba(37, 99, 235, 0.12);
-        }
-
-        .hero-welcome__ring--2 {
-          inset: 2rem;
-          border-color: rgba(124, 58, 237, 0.08);
-        }
-
-        .hero-welcome__ring--3 {
-          inset: 4rem;
-          border-color: rgba(20, 184, 166, 0.06);
-        }
-
-        .hero-welcome__ring-dash {
-          position: absolute;
-          top: -2px;
-          left: 50%;
-          width: 8px;
-          height: 4px;
-          background: #3B82F6;
-          border-radius: 4px;
-          transform: translateX(-50%);
-          opacity: 0.6;
-        }
-
-        .hero-welcome__ring-dash--2 {
-          top: auto;
-          bottom: -2px;
-          background: #8B5CF6;
-          opacity: 0.4;
-        }
-
-        .hero-welcome__ring-dash--3 {
-          top: 50%;
-          left: -2px;
-          transform: translateY(-50%) translateX(0);
-          background: #14B8A6;
-          opacity: 0.3;
-          width: 4px;
-          height: 8px;
-        }
-
-        .hero-welcome__ring--2 .hero-welcome__ring-dash {
-          background: #8B5CF6;
-        }
-
-        .hero-welcome__ring--2 .hero-welcome__ring-dash--2 {
-          background: #14B8A6;
-        }
-
-        .hero-welcome__ring--3 .hero-welcome__ring-dash {
-          background: #14B8A6;
-        }
-
-        .hero-welcome__ring--3 .hero-welcome__ring-dash--2 {
-          background: #3B82F6;
-        }
-
-        .hero-welcome__center {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .hero-welcome__center-glow {
-          position: absolute;
-          width: 140px;
-          height: 140px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.15), transparent 70%);
-          animation: welcomeCenterGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes welcomeCenterGlow {
-          0%, 100% { transform: scale(1); opacity: 0.6; }
-          50% { transform: scale(1.15); opacity: 1; }
-        }
-
-        .hero-welcome__center-box {
-          width: 80px;
-          height: 80px;
-          border-radius: 20px;
-          background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 20px 60px rgba(37, 99, 235, 0.3);
-          position: relative;
-          z-index: 2;
-          transition: transform 0.3s ease;
-        }
-
-        .hero-welcome__center-box:hover {
-          transform: scale(1.05);
-        }
-
-        .hero-welcome__center-text {
-          font-size: 2.2rem;
-          font-weight: 800;
-          color: #FFFFFF;
-          font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .hero-welcome__orbit-dot-inner {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: rgba(59, 130, 246, 0.2);
-          transition: all 0.3s ease;
-        }
-
-        .hero-welcome__orbit-dot:nth-child(1) .hero-welcome__orbit-dot-inner {
-          background: rgba(37, 99, 235, 0.3);
-        }
-        .hero-welcome__orbit-dot:nth-child(2) .hero-welcome__orbit-dot-inner {
-          background: rgba(124, 58, 237, 0.3);
-        }
-        .hero-welcome__orbit-dot:nth-child(3) .hero-welcome__orbit-dot-inner {
-          background: rgba(20, 184, 166, 0.3);
-        }
-        .hero-welcome__orbit-dot:nth-child(4) .hero-welcome__orbit-dot-inner {
-          background: rgba(59, 130, 246, 0.3);
-        }
-        .hero-welcome__orbit-dot:nth-child(5) .hero-welcome__orbit-dot-inner {
-          background: rgba(124, 58, 237, 0.3);
-        }
-        .hero-welcome__orbit-dot:nth-child(6) .hero-welcome__orbit-dot-inner {
-          background: rgba(20, 184, 166, 0.3);
-        }
-
-        /* ---- Actions Wrapper ---- */
-        .hero-welcome__actions-wrapper {
-          margin-top: 3rem;
-          display: flex;
-          justify-content: center;
-          width: 100%;
-        }
-
-        .hero-welcome__actions {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1.5rem;
-          justify-content: center;
-        }
-
-        .hero-welcome__btn-primary {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.6rem;
-          padding: 0.85rem 2rem;
-          background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-          color: #FFFFFF;
+        .hero-slider-premium__subtitle {
+          font-size: 1.05rem;
           font-weight: 600;
-          font-size: clamp(0.85rem, 0.95vw, 0.95rem);
-          border-radius: 14px;
-          border: none;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          text-decoration: none;
-          box-shadow: 0 12px 32px rgba(37, 99, 235, 0.25);
-          white-space: nowrap;
+          color: rgba(255, 255, 255, 0.6);
+          letter-spacing: 0.02em;
         }
 
-        .hero-welcome__btn-primary:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 20px 48px rgba(37, 99, 235, 0.35);
+        .hero-slider-premium__desc {
+          font-size: 0.95rem;
+          color: rgba(255, 255, 255, 0.6);
+          line-height: 1.8;
+          max-width: 480px;
         }
 
-        .hero-welcome__btn-icon {
-          transition: transform 0.3s ease;
+        .hero-slider-premium__features {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.4rem 1.5rem;
         }
 
-        .hero-welcome__btn-primary:hover .hero-welcome__btn-icon {
-          transform: translateX(4px);
+        .hero-slider-premium__feature {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.7);
         }
 
-        .hero-welcome__btn-secondary {
+        .hero-slider-premium__feature svg {
+          flex-shrink: 0;
+        }
+
+        .hero-slider-premium__cta {
           display: inline-flex;
           align-items: center;
           gap: 0.6rem;
-          padding: 0.85rem 2rem;
+          padding: 0.8rem 2rem;
           background: rgba(255, 255, 255, 0.04);
           backdrop-filter: blur(12px);
           border: 1px solid rgba(255, 255, 255, 0.08);
           color: #F1F5F9;
           font-weight: 600;
-          font-size: clamp(0.85rem, 0.95vw, 0.95rem);
+          font-size: 0.9rem;
           border-radius: 14px;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           text-decoration: none;
-          white-space: nowrap;
+          transition: all 0.3s ease;
+          width: fit-content;
         }
 
-        .hero-welcome__btn-secondary:hover {
+        .hero-slider-premium__cta:hover {
           background: rgba(255, 255, 255, 0.08);
-          transform: translateY(-3px);
+          transform: translateY(-2px);
           border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .hero-slider-premium__cta svg {
+          transition: transform 0.3s ease;
+        }
+
+        .hero-slider-premium__cta:hover svg {
+          transform: translateX(4px);
+        }
+
+        /* ---- Right Visual ---- */
+        .hero-slider-premium__visual {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+        }
+
+        .hero-slider-premium__visual-container {
+          position: relative;
+          width: 100%;
+          max-width: 420px;
+          aspect-ratio: 1/1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .hero-slider-premium__visual-icon {
+          width: 180px;
+          height: 180px;
+          border-radius: 50%;
+          border: 1px solid;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          z-index: 3;
+          animation: premiumIconFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes premiumIconFloat {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-12px) scale(1.02); }
+        }
+
+        .hero-slider-premium__visual-icon svg {
+          width: 72px;
+          height: 72px;
+        }
+
+        .hero-slider-premium__shape {
+          position: absolute;
+          border-radius: 50%;
+          opacity: 0.12;
+          animation: premiumShapeFloat 8s ease-in-out infinite;
+        }
+
+        .hero-slider-premium__shape--1 {
+          width: 80px;
+          height: 80px;
+          top: 10%;
+          right: 5%;
+          animation-delay: 0s;
+        }
+
+        .hero-slider-premium__shape--2 {
+          width: 60px;
+          height: 60px;
+          bottom: 15%;
+          left: 5%;
+          animation-delay: 3s;
+          animation-direction: reverse;
+        }
+
+        .hero-slider-premium__shape--3 {
+          width: 40px;
+          height: 40px;
+          top: 60%;
+          right: 10%;
+          animation-delay: 5s;
+        }
+
+        @keyframes premiumShapeFloat {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(20px, -25px) scale(1.2); }
+        }
+
+        .hero-slider-premium__glow {
+          position: absolute;
+          inset: -20px;
+          border-radius: 50%;
+          filter: blur(60px);
+          z-index: 1;
+          animation: premiumGlowPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes premiumGlowPulse {
+          0%, 100% { transform: scale(1); opacity: 0.5; }
+          50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* ---- Navigation ---- */
+        .hero-slider-premium__nav {
+          position: absolute;
+          bottom: 2.5rem;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 20;
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+          background: rgba(0, 0, 0, 0.3);
+          backdrop-filter: blur(20px);
+          padding: 0.5rem 1.5rem;
+          border-radius: 100px;
+          border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .hero-slider-premium__arrow {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          color: #94A3B8;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .hero-slider-premium__arrow:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: #F1F5F9;
+          transform: scale(1.05);
+        }
+
+        .hero-slider-premium__dots {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+        }
+
+        .hero-slider-premium__dot {
+          height: 6px;
+          border-radius: 100px;
+          border: none;
+          cursor: pointer;
+          transition: all 0.4s ease;
+          padding: 0;
+        }
+
+        .hero-slider-premium__dot:hover {
+          transform: scale(1.1);
+        }
+
+        .hero-slider-premium__dot--active {
+          height: 6px;
+          border-radius: 100px;
+        }
+
+        .hero-slider-premium__progress {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 15;
+          height: 3px;
+          background: rgba(255, 255, 255, 0.04);
+        }
+
+        .hero-slider-premium__progress-bar {
+          height: 100%;
+          transition: width 0.8s ease;
+          border-radius: 0 2px 2px 0;
+        }
+
+        .hero-slider-premium__counter {
+          position: absolute;
+          bottom: 5rem;
+          right: 3rem;
+          z-index: 15;
+          display: flex;
+          align-items: baseline;
+          gap: 0.15rem;
+          font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .hero-slider-premium__counter-current {
+          font-size: 2rem;
+          font-weight: 800;
+          color: #F1F5F9;
+          letter-spacing: -0.02em;
+        }
+
+        .hero-slider-premium__counter-total {
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.3);
         }
 
         /* ================================================================
@@ -622,269 +746,214 @@ export default function Hero() {
            ================================================================ */
 
         @media (max-width: 1024px) {
-          .hero-welcome__container {
-            padding: 0 24px;
+          .hero-slider-premium__slide {
+            grid-template-columns: 1fr;
+            gap: 2rem;
           }
-          .hero-welcome__visual-container {
-            max-width: 340px;
-          }
-          .hero-welcome__orbit-dot-inner {
-            transform: translateX(120px) !important;
-          }
-          .hero-welcome__orb--4 {
-            display: none;
-          }
-          .hero-welcome__actions {
-            gap: 1.25rem;
-          }
-        }
 
-        @media (max-width: 820px) {
-          .hero-welcome__container {
-            padding: 0 20px;
+          .hero-slider-premium__content {
+            max-width: 100%;
           }
-          .hero-welcome__actions {
-            gap: 1rem;
+
+          .hero-slider-premium__visual-container {
+            max-width: 300px;
+            margin: 0 auto;
+          }
+
+          .hero-slider-premium__visual-icon {
+            width: 140px;
+            height: 140px;
+          }
+
+          .hero-slider-premium__visual-icon svg {
+            width: 56px;
+            height: 56px;
+          }
+
+          .hero-slider-premium__container {
+            padding: 0 40px;
+          }
+
+          .hero-slider-premium__features {
+            grid-template-columns: 1fr;
+          }
+
+          .hero-slider-premium__counter {
+            display: none;
           }
         }
 
         @media (max-width: 768px) {
-          .hero-welcome {
-            min-height: auto;
-            padding: 5rem 0 3rem;
+          .hero-slider-premium {
+            height: auto;
+            min-height: 100vh;
+            padding: 72px 0 3rem;
           }
-          .hero-welcome__container {
-            padding: 0 16px;
+
+          .hero-slider-premium__container {
+            padding: 0 20px;
+            height: auto;
+            min-height: calc(100vh - 120px);
           }
-          .hero-welcome__grid {
-            gap: 2.5rem;
-            display: flex;
-            flex-direction: column;
+
+          .hero-slider-premium__slide {
+            gap: 1.5rem;
+            text-align: center;
           }
-          
-          .hero-welcome__content {
-            order: 1 !important;
-            width: 100%;
+
+          .hero-slider-premium__content {
             align-items: center;
             text-align: center;
           }
-          .hero-welcome__visual {
-            order: 2 !important;
-            width: 100%;
-          }
-          
-          .hero-welcome__visual-container {
-            max-width: 220px;
-            margin: 0 auto;
-          }
-          
-          .hero-welcome__title {
-            font-size: 1.8rem;
-            text-align: center;
-          }
-          .hero-welcome__title-highlight {
-            display: inline;
-          }
-          
-          .hero-welcome__desc {
-            font-size: 0.95rem;
-            text-align: center;
-            max-width: 100%;
-            padding: 0 0.5rem;
-          }
-          
-          .hero-welcome__tag {
-            margin: 0 auto;
-          }
-          .hero-welcome__tag span {
-            font-size: 0.75rem;
-          }
-          .hero-welcome__tag {
-            padding: 0.4rem 1rem;
-          }
-          
-          .hero-welcome__actions-wrapper {
-            order: 3 !important;
-            margin-top: 1.5rem;
-          }
-          
-          .hero-welcome__actions {
-            flex-direction: row !important;
-            justify-content: center;
-            width: 100%;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-          }
-          
-          .hero-welcome__btn-primary,
-          .hero-welcome__btn-secondary {
-            flex: 1;
-            min-width: 120px;
-            justify-content: center;
-            padding: 0.65rem 1rem;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            width: auto !important;
-          }
-          
-          .hero-welcome__center-box {
-            width: 56px;
-            height: 56px;
-          }
-          .hero-welcome__center-text {
-            font-size: 1.4rem;
-          }
-          .hero-welcome__orbit-dot-inner {
-            transform: translateX(70px) !important;
-          }
-          .hero-welcome__center-glow {
-            width: 90px;
-            height: 90px;
-          }
-          .hero-welcome__orb--4 {
-            display: none;
-          }
-          .hero-welcome__particles {
-            display: none;
-          }
-          .hero-welcome__ring--2 {
-            inset: 1.2rem;
-          }
-          .hero-welcome__ring--3 {
-            inset: 2.4rem;
-          }
-        }
 
-        @media (max-width: 600px) {
-          .hero-welcome__container {
-            padding: 0 14px;
+          .hero-slider-premium__badge {
+            margin: 0 auto;
           }
-          .hero-welcome__actions {
-            gap: 0.6rem;
+
+          .hero-slider-premium__product {
+            flex-direction: column;
+            align-items: center;
           }
-          .hero-welcome__btn-primary,
-          .hero-welcome__btn-secondary {
-            min-width: 100px;
-            padding: 0.55rem 0.75rem;
-            font-size: 0.7rem;
+
+          .hero-slider-premium__title {
+            font-size: 2rem;
           }
-          .hero-welcome__btn-primary svg,
-          .hero-welcome__btn-secondary svg {
-            width: 14px;
-            height: 14px;
+
+          .hero-slider-premium__subtitle {
+            font-size: 0.95rem;
+          }
+
+          .hero-slider-premium__desc {
+            font-size: 0.85rem;
+            max-width: 100%;
+          }
+
+          .hero-slider-premium__features {
+            grid-template-columns: 1fr;
+          }
+
+          .hero-slider-premium__cta {
+            width: 100%;
+            justify-content: center;
+          }
+
+          .hero-slider-premium__visual-container {
+            max-width: 220px;
+          }
+
+          .hero-slider-premium__visual-icon {
+            width: 110px;
+            height: 110px;
+          }
+
+          .hero-slider-premium__visual-icon svg {
+            width: 44px;
+            height: 44px;
+          }
+
+          .hero-slider-premium__nav {
+            bottom: 1.5rem;
+            padding: 0.4rem 1rem;
+            gap: 1rem;
+          }
+
+          .hero-slider-premium__arrow {
+            width: 32px;
+            height: 32px;
+          }
+
+          .hero-slider-premium__arrow svg {
+            width: 18px;
+            height: 18px;
+          }
+
+          .hero-slider-premium__dot {
+            width: 6px;
+            height: 6px;
+          }
+
+          .hero-slider-premium__dot--active {
+            width: 24px;
+            height: 6px;
+          }
+
+          .hero-slider-premium__shape {
+            display: none;
+          }
+
+          .hero-slider-premium__counter {
+            display: none;
+          }
+
+          .hero-slider-premium__particles {
+            display: none;
           }
         }
 
         @media (max-width: 480px) {
-          .hero-welcome {
-            padding: 4rem 0 2rem;
+          .hero-slider-premium__container {
+            padding: 0 16px;
           }
-          .hero-welcome__container {
-            padding: 0 12px;
+
+          .hero-slider-premium__title {
+            font-size: 1.6rem;
           }
-          .hero-welcome__title {
-            font-size: 1.5rem;
-          }
-          .hero-welcome__desc {
-            font-size: 0.85rem;
-            padding: 0 0.25rem;
-          }
-          
-          .hero-welcome__visual-container {
-            max-width: 160px;
-          }
-          .hero-welcome__orbit-dot-inner {
-            transform: translateX(50px) !important;
-          }
-          .hero-welcome__ring--2 {
-            inset: 1rem;
-          }
-          .hero-welcome__ring--3 {
-            inset: 2rem;
-          }
-          .hero-welcome__center-box {
+
+          .hero-slider-premium__icon {
             width: 44px;
             height: 44px;
-            border-radius: 12px;
           }
-          .hero-welcome__center-text {
-            font-size: 1.1rem;
+
+          .hero-slider-premium__icon svg {
+            width: 22px;
+            height: 22px;
           }
-          .hero-welcome__center-glow {
-            width: 70px;
-            height: 70px;
+
+          .hero-slider-premium__product-name {
+            font-size: 0.95rem;
           }
-          .hero-welcome__tag span {
-            font-size: 0.65rem;
+
+          .hero-slider-premium__visual-container {
+            max-width: 180px;
           }
-          .hero-welcome__tag {
-            padding: 0.3rem 0.75rem;
-            gap: 0.4rem;
+
+          .hero-slider-premium__visual-icon {
+            width: 90px;
+            height: 90px;
           }
-          .hero-welcome__tag-dot {
+
+          .hero-slider-premium__visual-icon svg {
+            width: 36px;
+            height: 36px;
+          }
+
+          .hero-slider-premium__nav {
+            bottom: 1rem;
+            padding: 0.3rem 0.8rem;
+            gap: 0.75rem;
+          }
+
+          .hero-slider-premium__arrow {
+            width: 28px;
+            height: 28px;
+          }
+
+          .hero-slider-premium__arrow svg {
+            width: 14px;
+            height: 14px;
+          }
+
+          .hero-slider-premium__dot {
             width: 5px;
             height: 5px;
           }
-          .hero-welcome__glow-ring {
-            inset: -8px;
-          }
-          .hero-welcome__orb--1,
-          .hero-welcome__orb--2,
-          .hero-welcome__orb--3 {
-            filter: blur(50px);
-          }
-          
-          .hero-welcome__actions-wrapper {
-            margin-top: 1rem;
-          }
-          
-          .hero-welcome__actions {
-            gap: 0.5rem;
-          }
-          
-          .hero-welcome__btn-primary,
-          .hero-welcome__btn-secondary {
-            min-width: 80px;
-            padding: 0.5rem 0.6rem;
-            font-size: 0.65rem;
-            gap: 0.3rem;
-          }
-          .hero-welcome__btn-primary svg,
-          .hero-welcome__btn-secondary svg {
-            width: 12px;
-            height: 12px;
-          }
-          .hero-welcome__tag {
-            padding: 0.25rem 0.6rem;
-          }
-          .hero-welcome__tag span {
-            font-size: 0.6rem;
-          }
-        }
 
-        @media (max-width: 360px) {
-          .hero-welcome__container {
-            padding: 0 10px;
-          }
-          .hero-welcome__title {
-            font-size: 1.3rem;
-          }
-          .hero-welcome__actions {
-            gap: 0.4rem;
-          }
-          .hero-welcome__btn-primary,
-          .hero-welcome__btn-secondary {
-            min-width: 70px;
-            padding: 0.4rem 0.5rem;
-            font-size: 0.6rem;
-          }
-          .hero-welcome__btn-primary svg,
-          .hero-welcome__btn-secondary svg {
-            width: 10px;
-            height: 10px;
+          .hero-slider-premium__dot--active {
+            width: 18px;
+            height: 5px;
           }
         }
       `}</style>
-    </section>
+    </div>
   )
 }
