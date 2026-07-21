@@ -18,7 +18,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-in-prod
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,38.242.200.152').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,38.242.200.152,quantivolabs.co.ke,www.quantivolabs.co.ke').split(',')
+
+CSRF_TRUSTED_ORIGINS = ['https://quantivolabs.co.ke', 'https://www.quantivolabs.co.ke']
 
 # Application definition
 INSTALLED_APPS = [
@@ -124,7 +126,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = ['https://quantivolabs.co.ke', 'https://www.quantivolabs.co.ke']
 CORS_ALLOW_CREDENTIALS = True
 
 # REST Framework

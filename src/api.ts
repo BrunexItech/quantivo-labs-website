@@ -1,16 +1,16 @@
-export const API_BASE = import.meta.env.VITE_API_URL || 'http://38.242.200.152:8009';
+export const API_BASE = import.meta.env.VITE_API_URL || 'https://quantivolabs.co.ke';
 
 export const api = {
   // Products
   getProducts: (params: string = '') => 
-    fetch(`${API_BASE}/products/products/${params}`).then(res => res.json()),
+    fetch(`${API_BASE}/api/products/products/${params}`).then(res => res.json()),
   
   getProduct: (slug: string) => 
-    fetch(`${API_BASE}/products/products/${slug}/`).then(res => res.json()),
+    fetch(`${API_BASE}/api/products/products/${slug}/`).then(res => res.json()),
   
   // Categories
   getCategories: () => 
-    fetch(`${API_BASE}/products/categories/`).then(res => res.json()),
+    fetch(`${API_BASE}/api/products/categories/`).then(res => res.json()),
   
   // Services
   getServices: () => 
