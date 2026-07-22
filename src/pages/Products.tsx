@@ -1,68 +1,100 @@
-import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { 
-  ArrowRight, 
-  CheckCircle, 
-  Zap, 
-  Shield, 
-  Users, 
-  BarChart3, 
-  Globe, 
-  Smartphone,
-  Building2,
-  HeartPulse,
-  GraduationCap,
-  ShoppingBag,
-  Wallet,
-  Rocket,
-  Sparkles,
-  ChevronRight,
-  Star,
-  TrendingUp,
-  Award,
-  Clock
+import {
+  ArrowRight, CreditCard, Wallet, ShoppingCart, Calendar,
+  Building2, Share2, PhoneCall, ShoppingBag, Hotel,
+  GraduationCap, Hospital, Landmark, CheckCircle2, BarChart2,
+  Users2, Banknote, Server, ClipboardList, Sparkles,
+  Rocket, Zap, Layers, Grid3X3, ChevronDown, ChevronUp, Eye
 } from 'lucide-react'
 import { api } from '../api'
+
+interface Category {
+  id: string
+  name: string
+  emoji: string
+  color: string
+  bgColor: string
+  image: string
+  description: string
+}
 
 interface Product {
   id: number
   name: string
-  slug: string
-  description: string
-  icon: string
-  color: string
-  featured: boolean
+  tag: string
+  tagClass: string
+  desc: string
+  features: string[]
+  stack: string[]
+  category: string
 }
 
-interface Testimonial {
-  id: number
-  name: string
-  role: string
-  company: string
-  content: string
-  rating: number
-  avatar: string
-}
-
-export default function Home() {
+export default function Products() {
   const [products, setProducts] = useState<Product[]>([])
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
-  const [heroLoaded, setHeroLoaded] = useState(false)
-  const counterRef = useRef<HTMLDivElement>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
+  const [activePill, setActivePill] = useState<string>('all')
+  const [isPillMode, setIsPillMode] = useState<boolean>(false)
+  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+
+  const mapCategoryToFrontend = (backendCategory: any): Category => {
+    return {
+      id: String(backendCategory.id),
+      name: backendCategory.name,
+      emoji: backendCategory.icon || '📦',
+      color: backendCategory.color || '#2563EB',
+      bgColor: `${backendCategory.color || '#2563EB'}12`,
+      image: backendCategory.image || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',
+      description: backendCategory.description || ''
+    }
+  }
+
+  const mapProductToFrontend = (backendProduct: any): Product => {
+    return {
+      id: backendProduct.id,
+      name: backendProduct.name,
+      tag: backendProduct.tag || 'Product',
+      tagClass: backendProduct.tag_class || 'pill-purple',
+      desc: backendProduct.desc || backendProduct.description || '',
+      features: backendProduct.features || [],
+      stack: backendProduct.stack || [],
+      category: backendProduct.category?.name || 'Uncategorized'
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsData, testimonialsData] = await Promise.all([
+        setLoading(true)
+        setError(null)
+        
+        const [productsData, categoriesData] = await Promise.all([
           api.getProducts(),
-          api.getTestimonials()
+          api.getCategories()
         ])
-        setProducts(productsData.results || productsData || [])
-        setTestimonials(testimonialsData.results || testimonialsData || [])
+        
+        console.log('Products data from backend:', productsData)
+        console.log('Categories data from backend:', categoriesData)
+        
+        const productList = productsData.results || productsData || []
+        const categoryList = categoriesData.results || categoriesData || []
+        
+        const mappedProducts = productList.map(mapProductToFrontend)
+        const mappedCategories = categoryList.map(mapCategoryToFrontend)
+        
+        setProducts(mappedProducts)
+        setCategories(mappedCategories)
+        
+        if (mappedCategories.length > 0) {
+          setExpandedCategory(mappedCategories[0].id)
+        }
+        
       } catch (error) {
-        console.error('Error fetching home data:', error)
+        console.error('Error fetching data:', error)
+        setError('Failed to load products. Please try again later.')
       } finally {
         setLoading(false)
       }
@@ -70,298 +102,284 @@ export default function Home() {
     fetchData()
   }, [])
 
-  // Preload hero image on component mount
-  useEffect(() => {
-    const img = new Image()
-    img.src = '/products_hero.jpg'
-    img.onload = () => setHeroLoaded(true)
-  }, [])
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategory(expandedCategory === categoryId ? null : categoryId)
+  }
 
-  const featuredProducts = products.filter(p => p.featured).slice(0, 6)
+  const handlePillClick = (categoryId: string) => {
+    setActivePill(categoryId)
+    
+    if (categoryId === 'all') {
+      setIsPillMode(false)
+      setExpandedCategory(null)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
 
-  return (
-    <div className="home-premium">
-      {/* ===== MULTIPLE PRELOAD STRATEGIES FOR INSTANT LOADING ===== */}
-      <link rel="preload" as="image" href="/products_hero.jpg" fetchPriority="high" />
-      <link rel="preload" as="image" href="/products_hero.jpg" imagesrcset="/products_hero.jpg" importance="high" />
+    setIsPillMode(true)
+    setExpandedCategory(categoryId)
 
-      {/* ===== HERO SECTION - INSTANT LOAD WITH BACKGROUND PLACEHOLDER ===== */}
-      <section className="home-premium__hero">
-        <div className="home-premium__hero-bg">
-          {/* Background color placeholder - shows instantly */}
-          <div className="home-premium__hero-placeholder" />
-          
-          {/* Image with all optimization attributes */}
-          <img 
-            src="/products_hero.jpg"
-            alt="Quantivo Labs - Technology Solutions"
-            className="home-premium__hero-image"
-            fetchPriority="high"
-            loading="eager"
-            decoding="sync"
-            width="1920"
-            height="1080"
-            style={{
-              opacity: heroLoaded ? 1 : 0,
-              transition: 'opacity 0.1s ease'
-            }}
-            onLoad={() => setHeroLoaded(true)}
-          />
-          <div className="home-premium__hero-overlay" />
-        </div>
+    setTimeout(() => {
+      const ref = categoryRefs.current[categoryId]
+      if (ref) {
+        const navbarHeight = 160
+        const elementPosition = ref.getBoundingClientRect().top + window.pageYOffset
+        const offsetPosition = elementPosition - navbarHeight
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' })
+      }
+    }, 100)
+  }
 
-        <div className="home-premium__hero-content">
-          <div className="home-premium__hero-inner">
-            <div className="home-premium__hero-badge">
-              <Sparkles size={14} />
-              <span>Innovating Tomorrow</span>
-            </div>
-            <h1 className="home-premium__hero-title">
-              Building the Future of <br />
-              <span className="home-premium__hero-accent">Technology in Africa</span>
-            </h1>
-            <p className="home-premium__hero-desc">
-              Quantivo Labs delivers innovative digital solutions that transform 
-              businesses and drive growth across the continent.
-            </p>
-            <div className="home-premium__hero-actions">
-              <Link to="/products" className="home-premium__hero-btn-primary">
-                Explore Solutions <ArrowRight size={18} />
-              </Link>
-              <Link to="/contact" className="home-premium__hero-btn-secondary">
-                Request Demo
-              </Link>
-            </div>
+  const getProductsByCategory = (categoryName: string) => {
+    return products.filter(p => p.category === categoryName)
+  }
+
+  // Hero section - always visible, never changes
+  const heroSection = (
+    <section className="products-hero">
+      <div className="products-hero__bg">
+        <img 
+          src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=815&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Digital transformation background"
+          className="products-hero__bg-image"
+        />
+        <div className="products-hero__overlay" />
+      </div>
+      <div className="products-hero__container">
+        <div className="products-hero__content">
+          <div className="products-hero__tag">
+            <span>Our Products</span>
           </div>
-        </div>
-      </section>
-
-      {/* ===== FEATURED PRODUCTS ===== */}
-      <section className="home-premium__products">
-        <div className="home-premium__container">
-          <div className="home-premium__section-header">
-            <div>
-              <span className="home-premium__section-tag">Our Solutions</span>
-              <h2 className="home-premium__section-title">Industry-Focused Platforms</h2>
-              <p className="home-premium__section-desc">
-                Discover our growing portfolio of intelligent platforms designed 
-                to power businesses across industries.
-              </p>
-            </div>
-            <Link to="/products" className="home-premium__section-link">
-              View All Products <ChevronRight size={16} />
+          <h1 className="products-hero__title">
+            Building Africa's<br />
+            <span className="products-gradient">Digital Future</span>
+          </h1>
+          <p className="products-hero__desc">
+            A growing portfolio of intelligent platforms designed to power businesses across industries.
+          </p>
+          <div className="products-hero__actions">
+            <Link to="/contact" className="products-btn-primary">
+              Explore Solutions <ArrowRight size={18} />
+            </Link>
+            <Link to="/contact" className="products-btn-secondary">
+              Request Demo
             </Link>
           </div>
-
-          {loading ? (
-            <div className="home-premium__products-grid home-premium__products-grid--loading">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="home-premium__product-card home-premium__product-card--loading">
-                  <div className="home-premium__product-icon-skeleton" />
-                  <div className="home-premium__product-skeleton-line" />
-                  <div className="home-premium__product-skeleton-line home-premium__product-skeleton-line--short" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="home-premium__products-grid">
-              {featuredProducts.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05 }}
-                  viewport={{ once: true }}
-                  className="home-premium__product-card"
-                >
-                  <div 
-                    className="home-premium__product-icon"
-                    style={{ background: `${product.color}15`, color: product.color }}
-                  >
-                    {product.icon === 'Building2' && <Building2 size={24} />}
-                    {product.icon === 'HeartPulse' && <HeartPulse size={24} />}
-                    {product.icon === 'GraduationCap' && <GraduationCap size={24} />}
-                    {product.icon === 'ShoppingBag' && <ShoppingBag size={24} />}
-                    {product.icon === 'Wallet' && <Wallet size={24} />}
-                    {product.icon === 'Rocket' && <Rocket size={24} />}
-                    {!['Building2', 'HeartPulse', 'GraduationCap', 'ShoppingBag', 'Wallet', 'Rocket'].includes(product.icon) && (
-                      <Zap size={24} />
-                    )}
-                  </div>
-                  <h3 className="home-premium__product-name">{product.name}</h3>
-                  <p className="home-premium__product-desc">{product.description}</p>
-                  <Link to={`/products/${product.slug}`} className="home-premium__product-link">
-                    Learn More <ArrowRight size={14} />
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          )}
         </div>
-      </section>
-
-      {/* ===== STATS ===== */}
-      <section className="home-premium__stats" ref={counterRef}>
-        <div className="home-premium__container">
-          <div className="home-premium__stats-grid">
-            <div className="home-premium__stat-item">
-              <div className="home-premium__stat-icon">
-                <Building2 size={24} />
-              </div>
-              <div className="home-premium__stat-number">18</div>
-              <div className="home-premium__stat-label">Products</div>
-            </div>
-            <div className="home-premium__stat-item">
-              <div className="home-premium__stat-icon">
-                <Zap size={24} />
-              </div>
-              <div className="home-premium__stat-number">5</div>
-              <div className="home-premium__stat-label">Categories</div>
-            </div>
-            <div className="home-premium__stat-item">
-              <div className="home-premium__stat-icon">
-                <Users size={24} />
-              </div>
-              <div className="home-premium__stat-number">100+</div>
-              <div className="home-premium__stat-label">Clients</div>
-            </div>
+        <div className="products-hero__stats">
+          <div className="products-stat">
+            <span className="products-stat__number">{loading ? '...' : products.length}</span>
+            <span className="products-stat__label">Products</span>
+          </div>
+          <div className="products-stat">
+            <span className="products-stat__number">{loading ? '...' : categories.length}</span>
+            <span className="products-stat__label">Categories</span>
+          </div>
+          <div className="products-stat">
+            <span className="products-stat__number">100+</span>
+            <span className="products-stat__label">Clients</span>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  )
 
-      {/* ===== WHY QUANTIVO ===== */}
-      <section className="home-premium__why">
-        <div className="home-premium__container">
-          <div className="home-premium__section-header home-premium__section-header--centered">
-            <span className="home-premium__section-tag">Why Quantivo</span>
-            <h2 className="home-premium__section-title">Built for the Future of Africa</h2>
-            <p className="home-premium__section-desc">
-              We combine cutting-edge technology with deep local expertise to 
-              create solutions that drive real impact.
-            </p>
-          </div>
-
-          <div className="home-premium__why-grid">
-            <div className="home-premium__why-card">
-              <div className="home-premium__why-icon" style={{ background: '#EEF2FF', color: '#2563EB' }}>
-                <Globe size={24} />
-              </div>
-              <h3 className="home-premium__why-title">Local Expertise</h3>
-              <p className="home-premium__why-desc">
-                Built by Africans for Africa, understanding local market dynamics 
-                and business challenges.
-              </p>
-            </div>
-            <div className="home-premium__why-card">
-              <div className="home-premium__why-icon" style={{ background: '#F0FDF4', color: '#16A34A' }}>
-                <Shield size={24} />
-              </div>
-              <h3 className="home-premium__why-title">Enterprise Grade</h3>
-              <p className="home-premium__why-desc">
-                Secure, scalable, and reliable platforms built with modern 
-                technology stacks.
-              </p>
-            </div>
-            <div className="home-premium__why-card">
-              <div className="home-premium__why-icon" style={{ background: '#FEF3C7', color: '#F59E0B' }}>
-                <Smartphone size={24} />
-              </div>
-              <h3 className="home-premium__why-title">Mobile-First</h3>
-              <p className="home-premium__why-desc">
-                Designed for the African market with mobile-first experiences 
-                and offline capabilities.
-              </p>
-            </div>
-          </div>
+  if (error) {
+    return (
+      <div className="products-page">
+        {heroSection}
+        <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+          <div style={{ color: '#DC2626', marginBottom: '1rem' }}>⚠️ {error}</div>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '0.5rem 1.5rem',
+              background: '#2563EB',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
         </div>
-      </section>
+      </div>
+    )
+  }
 
-      {/* ===== TESTIMONIALS ===== */}
-      <section className="home-premium__testimonials">
-        <div className="home-premium__container">
-          <div className="home-premium__section-header home-premium__section-header--centered">
-            <span className="home-premium__section-tag">Testimonials</span>
-            <h2 className="home-premium__section-title">What Our Clients Say</h2>
-            <p className="home-premium__section-desc">
-              Hear from businesses that have transformed their operations 
-              with Quantivo solutions.
-            </p>
-          </div>
+  return (
+    <div className="products-page">
+      {/* Hero always visible - loads instantly */}
+      {heroSection}
 
-          <div className="home-premium__testimonials-grid">
-            {testimonials.slice(0, 3).map((testimonial, index) => (
-              <motion.div
-                key={testimonial.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="home-premium__testimonial-card"
+      {/* ===== CATEGORY NAVIGATION PILLS ===== */}
+      <section className="products-nav-section">
+        <div className="container">
+          <div className="products-nav">
+            <button
+              className={`products-nav__pill ${activePill === 'all' ? 'products-nav__pill--active' : ''}`}
+              onClick={() => handlePillClick('all')}
+            >
+              <span>📋</span>
+              All
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className={`products-nav__pill ${activePill === category.id ? 'products-nav__pill--active' : ''}`}
+                onClick={() => handlePillClick(category.id)}
+                style={activePill === category.id ? { 
+                  background: category.color, 
+                  color: '#FFFFFF',
+                  borderColor: category.color 
+                } : {}}
               >
-                <div className="home-premium__testimonial-stars">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      size={16} 
-                      className={i < testimonial.rating ? 'filled' : ''}
-                    />
-                  ))}
-                </div>
-                <p className="home-premium__testimonial-content">"{testimonial.content}"</p>
-                <div className="home-premium__testimonial-author">
-                  <div className="home-premium__testimonial-avatar">
-                    {testimonial.avatar || testimonial.name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="home-premium__testimonial-name">{testimonial.name}</div>
-                    <div className="home-premium__testimonial-role">
-                      {testimonial.role}, {testimonial.company}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+                <span>{category.emoji}</span>
+                {category.name}
+              </button>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== CTA ===== */}
-      <section className="home-premium__cta">
-        <div className="home-premium__container">
-          <div className="home-premium__cta-card">
-            <div className="home-premium__cta-content">
-              <h2 className="home-premium__cta-title">Ready to Transform Your Business?</h2>
-              <p className="home-premium__cta-desc">
-                Join 100+ businesses across Africa using Quantivo solutions 
-                to drive growth and innovation.
-              </p>
-              <div className="home-premium__cta-actions">
-                <Link to="/contact" className="home-premium__cta-btn-primary">
-                  Get Started <ArrowRight size={18} />
-                </Link>
-                <Link to="/products" className="home-premium__cta-btn-secondary">
-                  Explore Solutions
-                </Link>
-              </div>
+      {/* ===== CATEGORY CARDS ===== */}
+      <section className="products-categories-section">
+        <div className="container">
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+              <div style={{ fontSize: '1.1rem', color: '#64748B' }}>Loading products...</div>
             </div>
-          </div>
+          ) : products.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+              <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No products found.</div>
+            </div>
+          ) : categories.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+              <div style={{ fontSize: '1.1rem', color: '#64748B' }}>No categories configured yet.</div>
+            </div>
+          ) : (
+            <div className="products-categories-grid">
+              {categories.map((category) => {
+                const isExpanded = expandedCategory === category.id
+                const categoryProducts = getProductsByCategory(category.name)
+                const productCount = categoryProducts.length
+                
+                const shouldHide = isPillMode && activePill !== category.id
+
+                return (
+                  <div 
+                    key={category.id} 
+                    ref={(el) => (categoryRefs.current[category.id] = el)}
+                    className={`products-category-card ${isExpanded ? 'products-category-card--expanded' : ''} ${shouldHide ? 'products-category-card--hidden' : ''}`}
+                    style={{ '--category-color': category.color } as React.CSSProperties}
+                  >
+                    <div 
+                      className="products-category-card__header"
+                      onClick={() => toggleCategory(category.id)}
+                    >
+                      <div className="products-category-card__image">
+                        <img src={category.image} alt={category.name} />
+                        <div className="products-category-card__overlay" style={{ background: `linear-gradient(135deg, ${category.color}cc, ${category.color}66)` }} />
+                        <div className="products-category-card__badge">
+                          <span className="products-category-card__emoji">{category.emoji}</span>
+                          <span className="products-category-card__count">{productCount} products</span>
+                        </div>
+                      </div>
+                      <div className="products-category-card__info">
+                        <div className="products-category-card__name" style={{ color: category.color }}>
+                          {category.name}
+                        </div>
+                        <p className="products-category-card__description">{category.description}</p>
+                        <div className="products-category-card__toggle">
+                          <Eye size={16} className="products-category-card__toggle-icon" />
+                          <span className="products-category-card__toggle-text">
+                            {isExpanded ? 'Hide Products' : `View ${productCount} Products`}
+                          </span>
+                          {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Expanded Products */}
+                    {isExpanded && (
+                      <div className="products-category-card__products">
+                        <div className="products-category-card__products-grid">
+                          {categoryProducts.map((product) => (
+                            <div key={product.id} className="products-category-card__product">
+                              <div className="products-category-card__product-icon">
+                                <BarChart2 size={26} />
+                              </div>
+                              <div className="products-category-card__product-content">
+                                <div className="products-category-card__product-header">
+                                  <h4 className="products-category-card__product-name">{product.name}</h4>
+                                  <span className={`products-pill ${product.tagClass}`}>{product.tag}</span>
+                                </div>
+                                <p className="products-category-card__product-desc">{product.desc}</p>
+                                <div className="products-category-card__product-features">
+                                  {product.features.slice(0, 3).map((f: string) => (
+                                    <div key={f} className="products-category-card__product-feature">
+                                      <CheckCircle2 size={12} color={category.color} />
+                                      <span>{f}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                                <Link to="/contact" className="products-category-card__product-link">
+                                  Learn More <ArrowRight size={14} />
+                                </Link>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       </section>
 
       <style>{`
-        .home-premium {
+        /* ============================================================
+           PRODUCTS PAGE - CATEGORY BASED
+           ============================================================ */
+        
+        .products-page {
+          --prod-primary: #0c1a3a;
+          --prod-accent: #f9734e;
+          --prod-accent-glow: rgba(249, 115, 78, 0.3);
+          --prod-bg: #f6f9fc;
+          --prod-card-bg: #ffffff;
+          --prod-border: rgba(12, 26, 58, 0.06);
+          --prod-shadow: 0 12px 40px -12px rgba(12, 26, 58, 0.08);
+          --prod-shadow-hover: 0 24px 64px -16px rgba(12, 26, 58, 0.14);
+          --prod-radius: 20px;
+          --prod-transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          color: #0F172A;
+          color: #0c1a3a;
+          background: var(--prod-bg);
         }
 
-        .home-premium__container {
-          max-width: 1200px;
+        .container {
+          max-width: 1240px;
           margin: 0 auto;
           padding: 0 28px;
         }
 
-        /* ===== HERO ===== */
-        .home-premium__hero {
+        /* ----- GRADIENT TEXT ----- */
+        .products-gradient {
+          background: linear-gradient(145deg, #f9734e 0%, #f59e0b 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        /* ============================================================
+           HERO - FULL SCREEN WITH STATIC IMAGE
+           ============================================================ */
+        .products-hero {
           position: relative;
           min-height: 100vh;
           width: 100%;
@@ -370,7 +388,7 @@ export default function Home() {
           overflow: hidden;
         }
 
-        .home-premium__hero-bg {
+        .products-hero__bg {
           position: absolute;
           inset: 0;
           z-index: 0;
@@ -378,633 +396,705 @@ export default function Home() {
           height: 100%;
         }
 
-        .home-premium__hero-placeholder {
-          position: absolute;
-          inset: 0;
-          background: #0F172A;
-          z-index: 1;
-        }
-
-        .home-premium__hero-image {
-          position: absolute;
-          inset: 0;
+        .products-hero__bg-image {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          z-index: 2;
         }
 
-        .home-premium__hero-overlay {
+        .products-hero__overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.7) 100%);
-          z-index: 3;
+          background: linear-gradient(135deg, rgba(12, 26, 58, 0.88) 0%, rgba(12, 26, 58, 0.4) 50%, rgba(12, 26, 58, 0.75) 100%);
+          z-index: 1;
         }
 
-        .home-premium__hero-content {
+        .products-hero__container {
           position: relative;
-          z-index: 10;
+          z-index: 2;
           width: 100%;
+          max-width: 1240px;
+          margin: 0 auto;
           padding: 0 28px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
         }
 
-        .home-premium__hero-inner {
-          max-width: 700px;
+        .products-hero__content {
+          max-width: 800px;
           margin: 0 auto;
           text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
 
-        .home-premium__hero-badge {
+        .products-hero__tag {
           display: inline-flex;
           align-items: center;
-          gap: 0.5rem;
-          padding: 0.4rem 1.25rem;
+          gap: 8px;
           background: rgba(255, 255, 255, 0.06);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 100px;
-          font-size: 0.7rem;
-          font-weight: 600;
-          color: #94A3B8;
-          text-transform: uppercase;
-          letter-spacing: 0.06em;
-          margin-bottom: 1.25rem;
           backdrop-filter: blur(12px);
-        }
-
-        .home-premium__hero-badge svg {
-          color: #FBBF24;
-        }
-
-        .home-premium__hero-title {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: clamp(2.4rem, 4.5vw, 3.8rem);
-          font-weight: 800;
-          color: #F1F5F9;
-          line-height: 1.08;
-          letter-spacing: -0.03em;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 8px 24px;
+          border-radius: 100px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.7);
+          letter-spacing: 0.04em;
           margin-bottom: 1rem;
         }
 
-        .home-premium__hero-accent {
-          background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+        .products-hero__title {
+          font-size: clamp(2rem, 5vw, 3.5rem);
+          font-weight: 800;
+          line-height: 1.1;
+          color: #ffffff;
+          letter-spacing: -0.03em;
+          margin-bottom: 0.75rem;
         }
 
-        .home-premium__hero-desc {
-          font-size: 1.05rem;
-          color: #94A3B8;
-          max-width: 520px;
-          margin: 0 auto 2rem;
+        .products-hero__desc {
+          font-size: clamp(0.95rem, 1.2vw, 1.1rem);
           line-height: 1.7;
+          color: rgba(255, 255, 255, 0.7);
+          max-width: 600px;
+          margin: 0 auto 1.5rem;
         }
 
-        .home-premium__hero-actions {
+        .products-hero__actions {
           display: flex;
+          align-items: center;
           gap: 1rem;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .products-btn-primary {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          background: var(--prod-accent);
+          color: white;
+          font-weight: 600;
+          padding: 12px 28px;
+          border-radius: 60px;
+          text-decoration: none;
+          transition: var(--prod-transition);
+          font-size: 0.9rem;
+          border: none;
+          box-shadow: 0 12px 32px -8px rgba(249, 115, 78, 0.35);
+        }
+
+        .products-btn-primary:hover {
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 20px 48px -12px rgba(249, 115, 78, 0.45);
+        }
+
+        .products-btn-secondary {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: white;
+          font-weight: 600;
+          padding: 12px 28px;
+          border-radius: 60px;
+          text-decoration: none;
+          transition: var(--prod-transition);
+          font-size: 0.9rem;
+        }
+
+        .products-btn-secondary:hover {
+          background: rgba(255, 255, 255, 0.12);
+          border-color: rgba(255, 255, 255, 0.2);
+          transform: translateY(-2px);
+        }
+
+        .products-hero__stats {
+          display: flex;
+          gap: 3rem;
+          margin-top: 2rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
           justify-content: center;
           flex-wrap: wrap;
         }
 
-        .home-premium__hero-btn-primary {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.6rem;
-          padding: 0.85rem 2rem;
-          background: linear-gradient(135deg, #FBBF24, #F59E0B);
-          color: #0F172A;
-          font-weight: 700;
-          font-size: 0.95rem;
-          border-radius: 14px;
-          text-decoration: none;
-          transition: all 0.3s ease;
-          box-shadow: 0 12px 32px rgba(245, 158, 11, 0.2);
-        }
-
-        .home-premium__hero-btn-primary:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 20px 48px rgba(245, 158, 11, 0.35);
-        }
-
-        .home-premium__hero-btn-secondary {
-          display: inline-flex;
-          align-items: center;
-          padding: 0.85rem 2rem;
-          background: rgba(255, 255, 255, 0.06);
-          backdrop-filter: blur(12px);
-          color: #F1F5F9;
-          font-weight: 600;
-          font-size: 0.95rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 14px;
-          text-decoration: none;
-          transition: all 0.3s ease;
-        }
-
-        .home-premium__hero-btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.12);
-          transform: translateY(-3px);
-        }
-
-        /* ===== SECTION HEADERS ===== */
-        .home-premium__section-header {
+        .products-stat {
           display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          margin-bottom: 3rem;
-        }
-
-        .home-premium__section-header--centered {
           flex-direction: column;
           align-items: center;
-          text-align: center;
         }
 
-        .home-premium__section-tag {
-          display: inline-block;
-          font-size: 0.7rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: #2563EB;
-          background: #EEF2FF;
-          padding: 0.25rem 0.75rem;
-          border-radius: 100px;
-          margin-bottom: 0.5rem;
-        }
-
-        .home-premium__section-title {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: clamp(1.8rem, 3vw, 2.5rem);
+        .products-stat__number {
+          font-size: clamp(1.5rem, 2.5vw, 2rem);
           font-weight: 800;
-          color: #0F172A;
-          line-height: 1.1;
-          margin-bottom: 0.75rem;
+          color: #ffffff;
+          letter-spacing: -0.02em;
         }
 
-        .home-premium__section-desc {
-          font-size: 1rem;
-          color: #64748B;
-          max-width: 560px;
-          line-height: 1.7;
+        .products-stat__label {
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.5);
+          font-weight: 500;
+          margin-top: 2px;
         }
 
-        .home-premium__section-header--centered .home-premium__section-desc {
-          margin: 0 auto;
+        /* ============================================================
+           CATEGORY NAVIGATION PILLS
+           ============================================================ */
+        .products-nav-section {
+          padding: 1.5rem 0;
+          background: #FFFFFF;
+          border-bottom: 1px solid #E2E8F0;
+          position: sticky;
+          top: 72px;
+          z-index: 20;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
         }
 
-        .home-premium__section-link {
-          display: inline-flex;
+        .products-nav {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .products-nav__pill {
+          display: flex;
           align-items: center;
           gap: 0.4rem;
+          padding: 0.5rem 1.25rem;
+          border-radius: 100px;
+          border: 1.5px solid #E2E8F0;
+          background: #FFFFFF;
+          font-size: 0.8rem;
           font-weight: 600;
-          color: #2563EB;
-          text-decoration: none;
+          color: #475569;
+          cursor: pointer;
           transition: all 0.3s ease;
           white-space: nowrap;
         }
 
-        .home-premium__section-link:hover {
-          gap: 0.6rem;
-          color: #1D4ED8;
+        .products-nav__pill:hover {
+          border-color: #94A3B8;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         }
 
-        /* ===== PRODUCTS ===== */
-        .home-premium__products {
-          padding: 4rem 0 5rem;
-          background: #F8FAFC;
+        .products-nav__pill span {
+          font-size: 1rem;
         }
 
-        .home-premium__products-grid {
+        .products-nav__pill--active {
+          border-color: #2563EB;
+          background: #2563EB;
+          color: #FFFFFF;
+          box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+        }
+
+        .products-nav__pill--active:hover {
+          box-shadow: 0 6px 24px rgba(37, 99, 235, 0.25);
+        }
+
+        /* ============================================================
+           CATEGORY SECTION
+           ============================================================ */
+        .products-categories-section {
+          padding: 3rem 0 5rem;
+        }
+
+        .products-categories-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: 1fr;
           gap: 1.5rem;
         }
 
-        .home-premium__products-grid--loading {
-          opacity: 0.6;
+        /* ============================================================
+           CATEGORY CARD
+           ============================================================ */
+        .products-category-card {
+          background: #FFFFFF;
+          border-radius: 20px;
+          border: 1px solid #E2E8F0;
+          overflow: hidden;
+          transition: all 0.4s ease;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
         }
 
-        .home-premium__product-card {
-          background: #FFFFFF;
-          border-radius: 16px;
-          padding: 2rem;
-          border: 1px solid #E2E8F0;
-          transition: all 0.4s ease;
-          text-decoration: none;
+        .products-category-card--hidden {
+          display: none;
+        }
+
+        .products-category-card:hover {
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+        }
+
+        .products-category-card--expanded {
+          border-color: var(--category-color);
+          box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .products-category-card__header {
+          display: grid;
+          grid-template-columns: 280px 1fr;
+          gap: 2rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .products-category-card__image {
+          position: relative;
+          height: 220px;
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+
+        .products-category-card__image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+
+        .products-category-card:hover .products-category-card__image img {
+          transform: scale(1.03);
+        }
+
+        .products-category-card__overlay {
+          position: absolute;
+          inset: 0;
+          opacity: 0.4;
+        }
+
+        .products-category-card__badge {
+          position: absolute;
+          bottom: 0.75rem;
+          left: 0.75rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.3rem 0.8rem;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(8px);
+          border-radius: 100px;
+          color: #FFFFFF;
+          font-size: 0.7rem;
+          font-weight: 600;
+        }
+
+        .products-category-card__emoji {
+          font-size: 0.9rem;
+        }
+
+        .products-category-card__count {
+          font-size: 0.65rem;
+          opacity: 0.8;
+        }
+
+        .products-category-card__info {
+          padding: 1.5rem 1.5rem 1.5rem 0;
           display: flex;
           flex-direction: column;
-        }
-
-        .home-premium__product-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
-          border-color: #CBD5E1;
-        }
-
-        .home-premium__product-card--loading {
-          pointer-events: none;
-        }
-
-        .home-premium__product-icon {
-          width: 52px;
-          height: 52px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
           justify-content: center;
-          margin-bottom: 1rem;
         }
 
-        .home-premium__product-icon-skeleton {
-          width: 52px;
-          height: 52px;
-          border-radius: 12px;
-          background: #E2E8F0;
-          margin-bottom: 1rem;
-          animation: loadingPulse 1.5s ease-in-out infinite;
-        }
-
-        .home-premium__product-skeleton-line {
-          height: 16px;
-          background: #E2E8F0;
-          border-radius: 4px;
-          margin-bottom: 0.5rem;
-          animation: loadingPulse 1.5s ease-in-out infinite;
-        }
-
-        .home-premium__product-skeleton-line--short {
-          width: 60%;
-        }
-
-        @keyframes loadingPulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-
-        .home-premium__product-name {
+        .products-category-card__name {
           font-family: 'Space Grotesk', sans-serif;
-          font-size: 1.05rem;
+          font-size: 1.3rem;
           font-weight: 700;
-          color: #0F172A;
-          margin-bottom: 0.4rem;
+          margin-bottom: 0.5rem;
         }
 
-        .home-premium__product-desc {
-          font-size: 0.85rem;
+        .products-category-card__description {
+          font-size: 0.9rem;
           color: #64748B;
-          line-height: 1.6;
-          margin-bottom: 1.25rem;
-          flex: 1;
+          line-height: 1.7;
+          margin-bottom: 1rem;
         }
 
-        .home-premium__product-link {
+        .products-category-card__toggle {
           display: inline-flex;
           align-items: center;
-          gap: 0.4rem;
-          font-weight: 600;
-          font-size: 0.85rem;
-          color: #2563EB;
-          text-decoration: none;
-          transition: all 0.3s ease;
-        }
-
-        .home-premium__product-link:hover {
           gap: 0.6rem;
-          color: #1D4ED8;
-        }
-
-        /* ===== STATS ===== */
-        .home-premium__stats {
-          padding: 3rem 0;
-          background: #FFFFFF;
-          border-bottom: 1px solid #E2E8F0;
-        }
-
-        .home-premium__stats-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2rem;
-          max-width: 800px;
-          margin: 0 auto;
-        }
-
-        .home-premium__stat-item {
-          text-align: center;
-        }
-
-        .home-premium__stat-icon {
-          width: 48px;
-          height: 48px;
-          border-radius: 50%;
-          background: #EEF2FF;
-          color: #2563EB;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 0.5rem;
-        }
-
-        .home-premium__stat-number {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 2rem;
-          font-weight: 800;
-          color: #0F172A;
-        }
-
-        .home-premium__stat-label {
-          font-size: 0.85rem;
-          color: #64748B;
-          font-weight: 500;
-        }
-
-        /* ===== WHY QUANTIVO ===== */
-        .home-premium__why {
-          padding: 4rem 0;
-          background: #F8FAFC;
-        }
-
-        .home-premium__why-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2rem;
-          max-width: 900px;
-          margin: 0 auto;
-        }
-
-        .home-premium__why-card {
-          background: #FFFFFF;
-          border-radius: 16px;
-          padding: 2rem;
-          border: 1px solid #E2E8F0;
-          text-align: center;
-          transition: all 0.4s ease;
-        }
-
-        .home-premium__why-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
-        }
-
-        .home-premium__why-icon {
-          width: 56px;
-          height: 56px;
-          border-radius: 14px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 1rem;
-        }
-
-        .home-premium__why-title {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: #0F172A;
-          margin-bottom: 0.5rem;
-        }
-
-        .home-premium__why-desc {
-          font-size: 0.9rem;
-          color: #64748B;
-          line-height: 1.6;
-        }
-
-        /* ===== TESTIMONIALS ===== */
-        .home-premium__testimonials {
-          padding: 4rem 0;
-          background: #FFFFFF;
-        }
-
-        .home-premium__testimonials-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2rem;
-        }
-
-        .home-premium__testimonial-card {
-          background: #F8FAFC;
-          border-radius: 16px;
-          padding: 2rem;
-          border: 1px solid #E2E8F0;
-          transition: all 0.4s ease;
-        }
-
-        .home-premium__testimonial-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
-        }
-
-        .home-premium__testimonial-stars {
-          display: flex;
-          gap: 0.2rem;
-          margin-bottom: 1rem;
-        }
-
-        .home-premium__testimonial-stars .filled {
-          fill: #F59E0B;
-          color: #F59E0B;
-        }
-
-        .home-premium__testimonial-stars svg {
-          color: #CBD5E1;
-        }
-
-        .home-premium__testimonial-content {
-          font-size: 0.95rem;
-          color: #0F172A;
-          line-height: 1.7;
-          margin-bottom: 1.5rem;
-          font-style: italic;
-        }
-
-        .home-premium__testimonial-author {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .home-premium__testimonial-avatar {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #2563EB, #4F46E5);
+          padding: 0.6rem 1.25rem;
+          background: var(--category-color);
           color: #FFFFFF;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 0.85rem;
-        }
-
-        .home-premium__testimonial-name {
-          font-weight: 600;
-          font-size: 0.9rem;
-          color: #0F172A;
-        }
-
-        .home-premium__testimonial-role {
+          border-radius: 100px;
           font-size: 0.8rem;
-          color: #64748B;
+          font-weight: 700;
+          transition: all 0.3s ease;
+          width: fit-content;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+          cursor: pointer;
+          border: none;
         }
 
-        /* ===== CTA ===== */
-        .home-premium__cta {
-          padding: 4rem 0;
-          background: #0F172A;
+        .products-category-card__toggle:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
-        .home-premium__cta-card {
-          background: linear-gradient(135deg, #1E293B, #0F172A);
-          border-radius: 20px;
-          padding: 3rem;
-          border: 1px solid rgba(255, 255, 255, 0.04);
+        .products-category-card__toggle-icon {
+          opacity: 0.9;
         }
 
-        .home-premium__cta-content {
-          text-align: center;
-          max-width: 700px;
-          margin: 0 auto;
+        .products-category-card__toggle-text {
+          font-size: 0.8rem;
+          letter-spacing: 0.02em;
         }
 
-        .home-premium__cta-title {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: clamp(1.6rem, 2.5vw, 2.2rem);
-          font-weight: 800;
-          color: #F1F5F9;
-          margin-bottom: 0.75rem;
+        .products-category-card__toggle svg:last-child {
+          opacity: 0.8;
         }
 
-        .home-premium__cta-desc {
-          font-size: 1rem;
-          color: #94A3B8;
-          line-height: 1.7;
-          margin-bottom: 2rem;
+        /* ============================================================
+           CATEGORY PRODUCTS (EXPANDED)
+           ============================================================ */
+        .products-category-card__products {
+          border-top: 1px solid #E2E8F0;
+          padding: 2rem;
+          animation: productsSlideDown 0.4s ease;
         }
 
-        .home-premium__cta-actions {
+        @keyframes productsSlideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .products-category-card__products-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 1.5rem;
+        }
+
+        .products-category-card__product {
           display: flex;
           gap: 1rem;
+          padding: 1.25rem;
+          background: #F8FAFC;
+          border-radius: 14px;
+          border: 1px solid #E2E8F0;
+          transition: all 0.3s ease;
+        }
+
+        .products-category-card__product:hover {
+          background: #FFFFFF;
+          border-color: #CBD5E1;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        .products-category-card__product-icon {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: #EEF2FF;
+          color: #1E3A8A;
+          display: flex;
+          align-items: center;
           justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .products-category-card__product-content {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .products-category-card__product-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
           flex-wrap: wrap;
+          margin-bottom: 0.3rem;
         }
 
-        .home-premium__cta-btn-primary {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.6rem;
-          padding: 0.85rem 2rem;
-          background: linear-gradient(135deg, #FBBF24, #F59E0B);
-          color: #0F172A;
+        .products-category-card__product-name {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 0.95rem;
           font-weight: 700;
-          font-size: 0.95rem;
-          border-radius: 14px;
-          text-decoration: none;
-          transition: all 0.3s ease;
-          box-shadow: 0 12px 32px rgba(245, 158, 11, 0.2);
+          color: #0F172A;
         }
 
-        .home-premium__cta-btn-primary:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 20px 48px rgba(245, 158, 11, 0.35);
+        .products-pill {
+          display: inline-block;
+          font-size: 0.55rem;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          padding: 2px 10px;
+          border-radius: 40px;
+          background: #eef2f6;
+          color: #4a5f7a;
+          flex-shrink: 0;
         }
 
-        .home-premium__cta-btn-secondary {
+        .pill-red { background: #fee8e6; color: #c2412c; }
+        .pill-indigo { background: #e2e9ff; color: #284b9c; }
+        .pill-cyan { background: #dcf5fa; color: #0c6b7a; }
+        .pill-emerald { background: #ddf5e9; color: #0d6b48; }
+        .pill-rose { background: #fde8ed; color: #b33f5a; }
+        .pill-teal { background: #d4f0f0; color: #0a6b6b; }
+        .pill-amber { background: #fef3e0; color: #b8681a; }
+        .pill-purple { background: #ede7ff; color: #5b33a4; }
+        .pill-gold { background: #fef7d9; color: #a67c00; }
+
+        .products-category-card__product-desc {
+          font-size: 0.8rem;
+          color: #64748B;
+          line-height: 1.6;
+          margin-bottom: 0.5rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .products-category-card__product-features {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.4rem 0.8rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .products-category-card__product-feature {
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+          font-size: 0.7rem;
+          color: #475569;
+        }
+
+        .products-category-card__product-link {
           display: inline-flex;
           align-items: center;
-          padding: 0.85rem 2rem;
-          background: rgba(255, 255, 255, 0.06);
-          color: #F1F5F9;
+          gap: 0.3rem;
+          font-size: 0.75rem;
           font-weight: 600;
-          font-size: 0.95rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 14px;
+          color: var(--category-color, #2563EB);
           text-decoration: none;
           transition: all 0.3s ease;
         }
 
-        .home-premium__cta-btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.12);
-          transform: translateY(-3px);
+        .products-category-card__product-link:hover {
+          gap: 0.6rem;
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
         @media (max-width: 1024px) {
-          .home-premium__products-grid {
-            grid-template-columns: repeat(2, 1fr);
+          .products-category-card__header {
+            grid-template-columns: 200px 1fr;
           }
-          .home-premium__testimonials-grid {
-            grid-template-columns: repeat(2, 1fr);
+          .products-category-card__image {
+            height: 180px;
           }
         }
 
-        @media (max-width: 768px) {
-          .home-premium__container {
-            padding: 0 16px;
+        @media (max-width: 820px) {
+          .products-category-card__header {
+            grid-template-columns: 1fr;
+            gap: 0;
           }
-          .home-premium__hero {
+          .products-category-card__image {
+            height: 160px;
+            width: 100%;
+          }
+          .products-category-card__info {
+            padding: 1.25rem;
+            align-items: center;
+            text-align: center;
+          }
+          .products-category-card__description {
+            text-align: center;
+          }
+          .products-category-card__toggle {
+            margin: 0 auto;
+          }
+          .products-category-card__products-grid {
+            grid-template-columns: 1fr;
+          }
+          .products-hero {
             min-height: 80vh;
           }
-          .home-premium__hero-title {
-            font-size: 2rem;
+          .products-hero__container {
+            min-height: 80vh;
+            padding: 0 20px;
           }
-          .home-premium__products-grid {
-            grid-template-columns: 1fr;
+          .products-hero__title {
+            font-size: 2.2rem;
           }
-          .home-premium__testimonials-grid {
-            grid-template-columns: 1fr;
+          .products-hero__stats {
+            gap: 1.5rem;
           }
-          .home-premium__stats-grid {
-            grid-template-columns: 1fr;
-            gap: 1rem;
+          .products-stat__number {
+            font-size: 1.4rem;
           }
-          .home-premium__why-grid {
-            grid-template-columns: 1fr;
+          .products-nav-section {
+            top: 64px;
+            padding: 1rem 0;
           }
-          .home-premium__section-header {
+          .products-nav {
+            gap: 0.4rem;
+          }
+          .products-nav__pill {
+            padding: 0.4rem 1rem;
+            font-size: 0.7rem;
+          }
+          .products-nav__pill span {
+            font-size: 0.8rem;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .container {
+            padding: 0 16px;
+          }
+          .products-hero {
+            min-height: 70vh;
+          }
+          .products-hero__container {
+            min-height: 70vh;
+            padding: 0 16px;
+          }
+          .products-hero__title {
+            font-size: 1.8rem;
+          }
+          .products-hero__desc {
+            font-size: 0.9rem;
+          }
+          .products-hero__actions {
             flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
+            width: 100%;
           }
-          .home-premium__section-header--centered {
-            align-items: center;
-          }
-          .home-premium__cta-card {
-            padding: 2rem 1.5rem;
-          }
-          .home-premium__hero-actions {
-            flex-direction: column;
-            align-items: center;
-          }
-          .home-premium__hero-btn-primary,
-          .home-premium__hero-btn-secondary {
+          .products-btn-primary,
+          .products-btn-secondary {
             width: 100%;
             justify-content: center;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+          }
+          .products-hero__stats {
+            gap: 1rem;
+            padding-top: 1rem;
+            margin-top: 1.5rem;
+          }
+          .products-stat__number {
+            font-size: 1.2rem;
+          }
+          .products-stat__label {
+            font-size: 0.65rem;
+          }
+          .products-categories-section {
+            padding: 2rem 0 3rem;
+          }
+          .products-category-card__image {
+            height: 140px;
+          }
+          .products-category-card__name {
+            font-size: 1.1rem;
+          }
+          .products-category-card__products {
+            padding: 1rem;
+          }
+          .products-category-card__product {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .products-category-card__product-header {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .products-category-card__product-features {
+            flex-direction: column;
+            gap: 0.2rem;
+          }
+          .products-category-card__toggle {
+            padding: 0.5rem 1rem;
+            font-size: 0.7rem;
+            gap: 0.4rem;
+          }
+          .products-category-card__toggle-text {
+            font-size: 0.7rem;
+          }
+          .products-nav-section {
+            padding: 0.75rem 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          .products-nav {
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            gap: 0.4rem;
+            padding: 0 4px;
+            overflow-x: auto;
+          }
+          .products-nav__pill {
+            flex-shrink: 0;
+            padding: 0.35rem 0.8rem;
+            font-size: 0.65rem;
+          }
+          .products-nav__pill span {
+            font-size: 0.7rem;
           }
         }
 
         @media (max-width: 480px) {
-          .home-premium__hero {
-            min-height: 70vh;
+          .products-hero {
+            min-height: 60vh;
           }
-          .home-premium__hero-title {
-            font-size: 1.6rem;
+          .products-hero__container {
+            min-height: 60vh;
           }
-          .home-premium__hero-desc {
-            font-size: 0.9rem;
+          .products-hero__title {
+            font-size: 1.5rem;
           }
-          .home-premium__product-card {
-            padding: 1.5rem;
+          .products-hero__desc {
+            font-size: 0.85rem;
           }
-          .home-premium__cta-actions {
-            flex-direction: column;
-            width: 100%;
+          .products-hero__stats {
+            gap: 0.75rem;
           }
-          .home-premium__cta-btn-primary,
-          .home-premium__cta-btn-secondary {
-            width: 100%;
-            justify-content: center;
+          .products-stat__number {
+            font-size: 1.1rem;
+          }
+          .products-stat__label {
+            font-size: 0.6rem;
+          }
+          .products-category-card__image {
+            height: 120px;
+          }
+          .products-category-card__badge {
+            font-size: 0.6rem;
+            padding: 0.2rem 0.6rem;
+          }
+          .products-category-card__description {
+            font-size: 0.8rem;
+          }
+          .products-category-card__toggle {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.65rem;
+          }
+          .products-nav__pill {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.6rem;
+          }
+          .products-nav__pill span {
+            font-size: 0.6rem;
           }
         }
       `}</style>
