@@ -92,7 +92,7 @@ export default function Services() {
       <section className="services-elite__hero">
         <div className="services-elite__hero-image">
           <img 
-            src="/services_hero.webp"
+            src="/services_hero.png"
             alt="Services Hero"
             className="services-elite__hero-img"
           />

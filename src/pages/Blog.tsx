@@ -29,8 +29,16 @@ export default function Blog() {
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All')
   const [hoveredPost, setHoveredPost] = useState<number | null>(null)
+  const [heroLoaded, setHeroLoaded] = useState(false)
 
   const categories = ['All', ...new Set(posts.map(p => p.category))]
+
+  // Preload hero image on component mount
+  useEffect(() => {
+    const img = new Image()
+    img.src = '/blog_hero.png'
+    img.onload = () => setHeroLoaded(true)
+  }, [])
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -54,13 +62,28 @@ export default function Blog() {
 
   return (
     <div className="blog-vanguard">
-      {/* ===== HERO - Always Visible, No Animation Delay ===== */}
+      {/* ===== MULTIPLE PRELOAD STRATEGIES ===== */}
+      <link rel="preload" as="image" href="/blog_hero.png" fetchPriority="high" />
+      
+      {/* ===== HERO - OPTIMIZED FOR INSTANT LOAD ===== */}
       <section className="blog-vanguard__hero">
+        {/* Background color placeholder - shows instantly */}
         <div className="blog-vanguard__hero-bg">
+          {/* Image with all optimization attributes */}
           <img 
             src="/blog_hero.png"
             alt="Blog hero background"
             className="blog-vanguard__hero-image"
+            fetchPriority="high"
+            loading="eager"
+            decoding="sync"
+            width="1920"
+            height="1080"
+            style={{
+              opacity: heroLoaded ? 1 : 0,
+              transition: 'opacity 0.1s ease'
+            }}
+            onLoad={() => setHeroLoaded(true)}
           />
           <div className="blog-vanguard__hero-overlay" />
         </div>
@@ -121,7 +144,7 @@ export default function Blog() {
                   className="blog-vanguard__featured-card"
                 >
                   <div className="blog-vanguard__featured-image">
-                    <img src={featured.image} alt={featured.title} />
+                    <img src={featured.image} alt={featured.title} loading="lazy" />
                     <div className="blog-vanguard__featured-tag">Featured</div>
                   </div>
                   <div className="blog-vanguard__featured-content">
@@ -193,7 +216,7 @@ export default function Blog() {
                       onMouseLeave={() => setHoveredPost(null)}
                     >
                       <div className="blog-vanguard__post-image">
-                        <img src={post.image} alt={post.title} />
+                        <img src={post.image} alt={post.title} loading="lazy" />
                         <span 
                           className="blog-vanguard__post-category"
                           style={{ background: post.category_color }}
@@ -290,12 +313,15 @@ export default function Blog() {
           z-index: 0;
           width: 100%;
           height: 100%;
+          background: #0F172A; /* Dark background shows instantly */
         }
 
         .blog-vanguard__hero-image {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          position: absolute;
+          inset: 0;
         }
 
         .blog-vanguard__hero-overlay {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, ArrowRight } from 'lucide-react'
 import { api } from '../api'
@@ -31,6 +31,14 @@ export default function Contact() {
 
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [heroLoaded, setHeroLoaded] = useState(false)
+
+  // Preload image on component mount
+  useEffect(() => {
+    const img = new Image()
+    img.src = '/contact_hero.png'
+    img.onload = () => setHeroLoaded(true)
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -71,16 +79,38 @@ export default function Contact() {
 
   return (
     <div className="contact-premium">
-      {/* ===== PRELOAD HERO IMAGE FOR INSTANT LOADING ===== */}
-      <link rel="preload" as="image" href="/contact_hero.png" />
+      {/* ===== MULTIPLE PRELOAD STRATEGIES FOR INSTANT LOADING ===== */}
+      
+      {/* 1. Preload link in head (critical) */}
+      <link rel="preload" as="image" href="/contact_hero.png" fetchPriority="high" />
+      
+      {/* 2. Preconnect to origin for faster loading */}
+      <link rel="preconnect" href={window.location.origin} />
+      
+      {/* 3. Preload with higher priority using resource hints */}
+      <link rel="preload" as="image" href="/contact_hero.png" imagesrcset="/contact_hero.png" importance="high" />
 
-      {/* ===== HERO SECTION - NO ANIMATIONS, INSTANT LOAD ===== */}
+      {/* ===== HERO SECTION - INSTANT LOAD WITH BACKGROUND PLACEHOLDER ===== */}
       <section className="contact-premium__hero">
         <div className="contact-premium__hero-image">
+          {/* Background color placeholder - shows instantly */}
+          <div className="contact-premium__hero-placeholder" />
+          
+          {/* Image with all optimization attributes */}
           <img 
             src="/contact_hero.png"
             alt="Contact Us"
             className="contact-premium__hero-img"
+            fetchPriority="high"
+            loading="eager"
+            decoding="sync"
+            width="1920"
+            height="1080"
+            style={{
+              opacity: heroLoaded ? 1 : 0,
+              transition: 'opacity 0.1s ease'
+            }}
+            onLoad={() => setHeroLoaded(true)}
           />
           <div className="contact-premium__hero-overlay" />
         </div>
@@ -306,17 +336,27 @@ export default function Contact() {
           z-index: 0;
         }
 
+        .contact-premium__hero-placeholder {
+          position: absolute;
+          inset: 0;
+          background: #0F172A; /* Dark background shows instantly */
+          z-index: 1;
+        }
+
         .contact-premium__hero-img {
+          position: absolute;
+          inset: 0;
           width: 100%;
           height: 100%;
           object-fit: cover;
+          z-index: 2;
         }
 
         .contact-premium__hero-overlay {
           position: absolute;
           inset: 0;
           background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.7) 100%);
-          z-index: 1;
+          z-index: 3;
         }
 
         .contact-premium__hero-content {
