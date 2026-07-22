@@ -88,35 +88,24 @@ export default function Services() {
 
   return (
     <div className="services-elite">
-      {/* Hero */}
+      {/* ===== HERO - WITH IMAGE ===== */}
       <section className="services-elite__hero">
-        <div className="services-elite__hero-bg">
-          <div className="services-elite__hero-gradient" />
-          <div className="services-elite__hero-orb" />
+        <div className="services-elite__hero-image">
+          <img 
+            src="/services_hero.webp"
+            alt="Services Hero"
+            className="services-elite__hero-img"
+          />
+          <div className="services-elite__hero-overlay" />
         </div>
+        
         <div className="services-elite__container">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="services-elite__hero-content"
-          >
+          <div className="services-elite__hero-content">
             <div className="services-elite__hero-badge">
               <Star size={14} />
               <span>Our Services</span>
             </div>
-            <h1 className="services-elite__hero-title">
-              Technology Services Built for <br />
-              <span className="services-elite__hero-accent">Enterprise Scale</span>
-            </h1>
-            <p className="services-elite__hero-desc">
-              Eight comprehensive service lines covering every aspect of your digital journey —
-              from strategy and architecture to delivery, talent, and ongoing support.
-            </p>
-            <Link to="/contact" className="services-elite__hero-btn">
-              Discuss Your Project <ArrowRight size={18} />
-            </Link>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -302,107 +291,57 @@ export default function Services() {
         /* ---- Hero ---- */
         .services-elite__hero {
           position: relative;
-          padding: 6rem 0 4rem;
-          overflow: hidden;
-          background: #0F172A;
-        }
-
-        .services-elite__hero-bg {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           overflow: hidden;
         }
 
-        .services-elite__hero-gradient {
+        .services-elite__hero-image {
           position: absolute;
           inset: 0;
-          background: 
-            radial-gradient(ellipse at 30% 50%, rgba(37, 99, 235, 0.08), transparent 60%),
-            radial-gradient(ellipse at 70% 50%, rgba(124, 58, 237, 0.06), transparent 60%);
+          z-index: 0;
         }
 
-        .services-elite__hero-orb {
+        .services-elite__hero-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .services-elite__hero-overlay {
           position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 600px;
-          height: 600px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.04), transparent 70%);
-          border-radius: 50%;
-          filter: blur(80px);
+          inset: 0;
+          background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.7) 100%);
+          z-index: 1;
         }
 
         .services-elite__hero-content {
           position: relative;
           z-index: 10;
           text-align: center;
-          max-width: 800px;
-          margin: 0 auto;
+          padding: 2rem 0;
         }
 
         .services-elite__hero-badge {
           display: inline-flex;
           align-items: center;
           gap: 0.5rem;
-          padding: 0.4rem 1.25rem;
+          padding: 0.6rem 2rem;
           background: rgba(255, 255, 255, 0.04);
           border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 100px;
-          font-size: 0.7rem;
+          font-size: 1rem;
           font-weight: 600;
-          color: #94A3B8;
+          color: #FFFFFF;
           text-transform: uppercase;
           letter-spacing: 0.06em;
-          margin-bottom: 1.25rem;
+          backdrop-filter: blur(12px);
         }
 
         .services-elite__hero-badge svg {
           color: #FBBF24;
-        }
-
-        .services-elite__hero-title {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: clamp(2.4rem, 4.5vw, 3.8rem);
-          font-weight: 800;
-          color: #F1F5F9;
-          line-height: 1.1;
-          letter-spacing: -0.03em;
-          margin-bottom: 1rem;
-        }
-
-        .services-elite__hero-accent {
-          color: #FBBF24;
-        }
-
-        .services-elite__hero-desc {
-          font-size: 1.05rem;
-          color: #94A3B8;
-          max-width: 600px;
-          margin: 0 auto 2rem;
-          line-height: 1.7;
-        }
-
-        .services-elite__hero-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.6rem;
-          padding: 0.85rem 2rem;
-          background: #2563EB;
-          color: #FFFFFF;
-          font-weight: 600;
-          font-size: 0.95rem;
-          border-radius: 14px;
-          text-decoration: none;
-          transition: all 0.3s ease;
-          box-shadow: 0 12px 32px rgba(37, 99, 235, 0.2);
-        }
-
-        .services-elite__hero-btn:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 20px 48px rgba(37, 99, 235, 0.3);
-          background: #1D4ED8;
         }
 
         /* ---- Grid Section ---- */
@@ -768,10 +707,7 @@ export default function Services() {
 
         @media (max-width: 768px) {
           .services-elite__hero {
-            padding: 4rem 0 3rem;
-          }
-          .services-elite__hero-title {
-            font-size: 2rem;
+            min-height: 70vh;
           }
           .services-elite__container {
             padding: 0 16px;
@@ -789,20 +725,25 @@ export default function Services() {
             grid-template-columns: 1fr;
             max-width: 400px;
           }
+          .services-elite__hero-badge {
+            font-size: 0.85rem;
+            padding: 0.5rem 1.5rem;
+          }
         }
 
         @media (max-width: 480px) {
-          .services-elite__hero-title {
-            font-size: 1.6rem;
-          }
-          .services-elite__hero-desc {
-            font-size: 0.9rem;
+          .services-elite__hero {
+            min-height: 60vh;
           }
           .services-elite__card {
             padding: 1.25rem;
           }
           .services-elite__process-card {
             padding: 1.25rem;
+          }
+          .services-elite__hero-badge {
+            font-size: 0.75rem;
+            padding: 0.4rem 1.2rem;
           }
         }
       `}</style>

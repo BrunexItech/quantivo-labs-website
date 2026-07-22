@@ -54,24 +54,18 @@ export default function Blog() {
 
   return (
     <div className="blog-vanguard">
-      {/* ===== HERO - Always Visible ===== */}
+      {/* ===== HERO - Always Visible, No Animation Delay ===== */}
       <section className="blog-vanguard__hero">
         <div className="blog-vanguard__hero-bg">
           <img 
-            src="https://images.unsplash.com/photo-1563986768711-b3bde3dc821e"
+            src="/blog_hero.png"
             alt="Blog hero background"
             className="blog-vanguard__hero-image"
           />
           <div className="blog-vanguard__hero-overlay" />
         </div>
-        {/* Hero Content - Always visible */}
         <div className="blog-vanguard__hero-content">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="blog-vanguard__hero-inner"
-          >
+          <div className="blog-vanguard__hero-inner">
             <div className="blog-vanguard__hero-badge">
               <Sparkles size={14} />
               <span>Insights & Perspectives</span>
@@ -83,7 +77,7 @@ export default function Blog() {
             <p className="blog-vanguard__hero-desc">
               Perspectives on AI, fintech, digital finance, healthcare IT, and the future of technology in Africa and beyond.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -270,10 +264,6 @@ export default function Blog() {
       )}
 
       <style>{`
-        /* ============================================================
-           BLOG VANGUARD - FULLY RESPONSIVE WITH HERO ALWAYS VISIBLE
-           ============================================================ */
-
         .blog-vanguard {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
           color: #0F172A;
@@ -284,10 +274,6 @@ export default function Blog() {
           margin: 0 auto;
           padding: 0 28px;
         }
-
-        /* ============================================================
-           HERO - Always Visible
-           ============================================================ */
 
         .blog-vanguard__hero {
           position: relative;
@@ -378,10 +364,6 @@ export default function Blog() {
           line-height: 1.7;
         }
 
-        /* ============================================================
-           LOADING STATE
-           ============================================================ */
-
         .blog-vanguard__loading {
           padding: 3rem 0 4rem;
           background: #F8FAFC;
@@ -432,10 +414,6 @@ export default function Blog() {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.5; }
         }
-
-        /* ============================================================
-           FEATURED ARTICLE
-           ============================================================ */
 
         .blog-vanguard__featured {
           padding: 3rem 0 2rem;
@@ -584,10 +562,6 @@ export default function Blog() {
           transform: translateX(4px);
         }
 
-        /* ============================================================
-           FILTER
-           ============================================================ */
-
         .blog-vanguard__filter {
           padding: 2rem 0 1.5rem;
           background: #FFFFFF;
@@ -623,10 +597,6 @@ export default function Blog() {
           border-color: #2563EB;
           color: #FFFFFF;
         }
-
-        /* ============================================================
-           GRID
-           ============================================================ */
 
         .blog-vanguard__grid-section {
           padding: 3rem 0 4rem;
@@ -770,10 +740,6 @@ export default function Blog() {
           color: #1D4ED8;
         }
 
-        /* ============================================================
-           NEWSLETTER
-           ============================================================ */
-
         .blog-vanguard__newsletter {
           padding: 4rem 0;
           background: #FFFFFF;
@@ -857,10 +823,6 @@ export default function Blog() {
           background: #1D4ED8;
           transform: translateX(4px);
         }
-
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
 
         @media (max-width: 1024px) {
           .blog-vanguard__featured-card {

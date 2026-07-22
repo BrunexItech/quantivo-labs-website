@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle, MessageCircle, Users, Award, ArrowRight } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, ArrowRight } from 'lucide-react'
 import { api } from '../api'
 
 interface FormData {
@@ -18,16 +17,6 @@ interface ContactInfo {
   value: string
 }
 
-interface HeroData {
-  id: number
-  title: string
-  subtitle: string
-  tag: string
-  image: string
-  btn_text: string
-  btn_link: string
-}
-
 export default function Contact() {
   const [searchParams] = useSearchParams()
   const productParam = searchParams.get('product') || ''
@@ -42,29 +31,6 @@ export default function Contact() {
 
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [heroData, setHeroData] = useState<HeroData | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (productParam) {
-      setFormData(prev => ({ ...prev, product: productParam }))
-    }
-  }, [productParam])
-
-  useEffect(() => {
-    const fetchHero = async () => {
-      try {
-        const data = await api.getHero()
-        const hero = data.results?.[0] || data
-        setHeroData(hero)
-      } catch (error) {
-        console.error('Error fetching hero:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchHero()
-  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -86,171 +52,58 @@ export default function Contact() {
   }
 
   const contactInfo: ContactInfo[] = [
-    { icon: MapPin, label: 'Visit Us', value: 'CPF Building, Mama Ngina Street, Opposite City Hall Annex, 5th Floor, Nairobi, Kenya' },
-    { icon: Phone, label: 'Call Us', value: '+254 726339982/ +254 726157375' },
-    { icon: Mail, label: 'Email Us', value: 'info@quantivolabs.tech' },
+    { 
+      icon: MapPin, 
+      label: 'Visit Us', 
+      value: 'Madona House, Mpaka Road, CBD, Nairobi, Kenya' 
+    },
+    { 
+      icon: Phone, 
+      label: 'Call Us', 
+      value: '+254715274418 / +254794913318 / +254726339982' 
+    },
+    { 
+      icon: Mail, 
+      label: 'Email Us', 
+      value: 'info@quantivolabs.tech' 
+    },
   ]
-
-  const heroTitle = heroData?.title || "Let's Build Something"
-  const heroSubtitle = heroData?.subtitle || 'Extraordinary Together'
-  const heroTag = heroData?.tag || "Let's Connect"
-  const heroBtnText = heroData?.btn_text || 'Get Started'
-  const heroBtnLink = heroData?.btn_link || '#contact-form'
 
   return (
     <div className="contact-premium">
-      {/* ===== CREATIVE HERO WITH STATIC IMAGE ===== */}
+      {/* ===== PRELOAD HERO IMAGE FOR INSTANT LOADING ===== */}
+      <link rel="preload" as="image" href="/contact_hero.png" />
+
+      {/* ===== HERO SECTION - NO ANIMATIONS, INSTANT LOAD ===== */}
       <section className="contact-premium__hero">
-        {/* Background Image - Static */}
         <div className="contact-premium__hero-image">
           <img 
-            src="https://plus.unsplash.com/premium_photo-1661763911173-f2f7becc70b0"
+            src="/contact_hero.png"
             alt="Contact Us"
             className="contact-premium__hero-img"
           />
           <div className="contact-premium__hero-overlay" />
         </div>
 
-        {/* Animated Particles */}
-        <div className="contact-premium__hero-particles">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="contact-premium__hero-particle"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${Math.random() * 4 + 2}px`,
-                height: `${Math.random() * 4 + 2}px`,
-              }}
-              animate={{
-                y: [0, -40, 0],
-                opacity: [0.3, 0.8, 0.3],
-              }}
-              transition={{
-                duration: Math.random() * 5 + 4,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: Math.random() * 5,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Floating Icons */}
-        <div className="contact-premium__hero-floating">
-          <motion.div
-            className="contact-premium__hero-float contact-premium__hero-float--1"
-            animate={{
-              y: [0, -20, 0],
-              rotate: [0, 10, 0],
-            }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          >
-            <MessageCircle size={22} />
-          </motion.div>
-          <motion.div
-            className="contact-premium__hero-float contact-premium__hero-float--2"
-            animate={{
-              y: [0, 20, 0],
-              rotate: [0, -10, 0],
-            }}
-            transition={{
-              duration: 7,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: 1,
-            }}
-          >
-            <Users size={20} />
-          </motion.div>
-          <motion.div
-            className="contact-premium__hero-float contact-premium__hero-float--3"
-            animate={{
-              y: [0, -25, 0],
-              rotate: [0, 15, 0],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: 2,
-            }}
-          >
-            <Award size={18} />
-          </motion.div>
-          <motion.div
-            className="contact-premium__hero-float contact-premium__hero-float--4"
-            animate={{
-              y: [0, 15, 0],
-              rotate: [0, -15, 0],
-            }}
-            transition={{
-              duration: 5,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: 0.5,
-            }}
-          >
-            <Mail size={18} />
-          </motion.div>
-          <motion.div
-            className="contact-premium__hero-float contact-premium__hero-float--5"
-            animate={{
-              y: [0, -18, 0],
-              rotate: [0, 8, 0],
-            }}
-            transition={{
-              duration: 6.5,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: 3,
-            }}
-          >
-            <Phone size={18} />
-          </motion.div>
-        </div>
-
-        {/* Content */}
         <div className="contact-premium__hero-content">
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '4rem 0', color: '#94A3B8' }}>
-              Loading...
+          <div className="contact-premium__hero-inner">
+            <div className="contact-premium__hero-tag">
+              <span>Let's Connect</span>
             </div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="contact-premium__hero-inner"
-            >
-              <div className="contact-premium__hero-tag">
-                <span>{heroTag}</span>
-              </div>
-              <h1 className="contact-premium__hero-title">
-                {heroTitle} <br />
-                <span className="contact-premium__hero-accent">{heroSubtitle}</span>
-              </h1>
-              <p className="contact-premium__hero-desc">
-                Have a project in mind? We'd love to hear from you. Fill in the form below 
-                and our team will reach out within 24 hours.
-              </p>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="contact-premium__hero-actions"
-              >
-                <a href={heroBtnLink} className="contact-premium__hero-btn">
-                  {heroBtnText} <ArrowRight size={18} />
-                </a>
-              </motion.div>
-            </motion.div>
-          )}
+            <h1 className="contact-premium__hero-title">
+              Let's Build Something <br />
+              <span className="contact-premium__hero-accent">Extraordinary Together</span>
+            </h1>
+            <p className="contact-premium__hero-desc">
+              Have a project in mind? We'd love to hear from you. Fill in the form below 
+              and our team will reach out within 24 hours.
+            </p>
+            <div className="contact-premium__hero-actions">
+              <a href="#contact-form" className="contact-premium__hero-btn">
+                Get Started <ArrowRight size={18} />
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -382,7 +235,6 @@ export default function Contact() {
                 )
               })}
 
-              {/* Working Hours Details */}
               <div className="contact-premium__hours">
                 <div className="contact-premium__hours-header">
                   <Clock size={18} />
@@ -406,7 +258,6 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Map Section - UPDATED LOCATION */}
           <div className="contact-premium__map">
             <div className="contact-premium__map-header">
               <MapPin size={20} />
@@ -429,10 +280,6 @@ export default function Contact() {
       </section>
 
       <style>{`
-        /* ================================================================
-           CONTACT PREMIUM - CREATIVE HERO WITH STATIC IMAGE
-           ================================================================ */
-
         .contact-premium {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
           color: #0F172A;
@@ -444,20 +291,15 @@ export default function Contact() {
           padding: 0 28px;
         }
 
-        /* ================================================================
-           CREATIVE HERO WITH STATIC IMAGE
-           ================================================================ */
-
         .contact-premium__hero {
           position: relative;
-          min-height: 100vh; /* ← Change from 85vh to 100vh */
+          min-height: 100vh;
           display: flex;
           align-items: center;
           overflow: hidden;
-          padding-top: 0; /* ← Remove or adjust padding */
+          padding-top: 0;
         }
 
-        /* ---- Background Image ---- */
         .contact-premium__hero-image {
           position: absolute;
           inset: 0;
@@ -468,12 +310,6 @@ export default function Contact() {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          animation: heroImageZoom 25s ease-in-out infinite alternate;
-        }
-
-        @keyframes heroImageZoom {
-          0% { transform: scale(1); }
-          100% { transform: scale(1.05); }
         }
 
         .contact-premium__hero-overlay {
@@ -483,79 +319,6 @@ export default function Contact() {
           z-index: 1;
         }
 
-        /* ---- Particles ---- */
-        .contact-premium__hero-particles {
-          position: absolute;
-          inset: 0;
-          z-index: 2;
-          pointer-events: none;
-          overflow: hidden;
-        }
-
-        .contact-premium__hero-particle {
-          position: absolute;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.08);
-        }
-
-        /* ---- Floating Icons ---- */
-        .contact-premium__hero-floating {
-          position: absolute;
-          inset: 0;
-          z-index: 2;
-          pointer-events: none;
-          overflow: hidden;
-        }
-
-        .contact-premium__hero-float {
-          position: absolute;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          color: rgba(255, 255, 255, 0.2);
-          backdrop-filter: blur(8px);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .contact-premium__hero-float--1 {
-          width: 56px;
-          height: 56px;
-          top: 15%;
-          right: 8%;
-        }
-
-        .contact-premium__hero-float--2 {
-          width: 48px;
-          height: 48px;
-          bottom: 25%;
-          left: 5%;
-        }
-
-        .contact-premium__hero-float--3 {
-          width: 44px;
-          height: 44px;
-          top: 45%;
-          right: 18%;
-        }
-
-        .contact-premium__hero-float--4 {
-          width: 40px;
-          height: 40px;
-          bottom: 15%;
-          right: 8%;
-        }
-
-        .contact-premium__hero-float--5 {
-          width: 46px;
-          height: 46px;
-          top: 25%;
-          left: 8%;
-        }
-
-        /* ---- Content ---- */
         .contact-premium__hero-content {
           position: relative;
           z-index: 10;
@@ -638,10 +401,6 @@ export default function Contact() {
           box-shadow: 0 20px 48px rgba(245, 158, 11, 0.35);
         }
 
-        /* ================================================================
-           MAIN CONTENT
-           ================================================================ */
-
         .contact-premium__main {
           padding: 4rem 0 5rem;
           background: #F8FAFC;
@@ -653,7 +412,6 @@ export default function Contact() {
           gap: 2.5rem;
         }
 
-        /* ---- Form ---- */
         .contact-premium__form-wrapper {
           background: #FFFFFF;
           border-radius: 20px;
@@ -752,7 +510,6 @@ export default function Contact() {
           cursor: not-allowed;
         }
 
-        /* ---- Success ---- */
         .contact-premium__success {
           text-align: center;
           padding: 2.5rem 1rem;
@@ -799,7 +556,6 @@ export default function Contact() {
           transform: translateY(-2px);
         }
 
-        /* ---- Info Cards ---- */
         .contact-premium__info-wrapper {
           display: flex;
           flex-direction: column;
@@ -850,7 +606,6 @@ export default function Contact() {
           margin-top: 2px;
         }
 
-        /* ---- Working Hours ---- */
         .contact-premium__hours {
           background: #FFFFFF;
           border-radius: 16px;
@@ -903,7 +658,6 @@ export default function Contact() {
           color: #DC2626;
         }
 
-        /* ---- Map ---- */
         .contact-premium__map {
           margin-top: 2.5rem;
         }
@@ -943,28 +697,18 @@ export default function Contact() {
           display: block;
         }
 
-        /* ================================================================
-           RESPONSIVE
-           ================================================================ */
-
         @media (max-width: 1024px) {
           .contact-premium__grid {
             grid-template-columns: 1fr;
             gap: 2rem;
           }
-
           .contact-premium__info-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
           }
-
           .contact-premium__hours {
             grid-column: 1 / -1;
-          }
-
-          .contact-premium__hero-float {
-            display: none;
           }
         }
 
@@ -972,37 +716,26 @@ export default function Contact() {
           .contact-premium__container {
             padding: 0 16px;
           }
-
           .contact-premium__hero {
             min-height: 70vh;
           }
-
           .contact-premium__hero-title {
             font-size: 2rem;
           }
-
           .contact-premium__hero-desc {
             font-size: 0.95rem;
           }
-
           .contact-premium__form-wrapper {
             padding: 1.5rem;
           }
-
           .contact-premium__form-row {
             grid-template-columns: 1fr;
           }
-
           .contact-premium__info-wrapper {
             grid-template-columns: 1fr;
           }
-
           .contact-premium__map-container {
             height: 250px;
-          }
-
-          .contact-premium__hero-particles {
-            display: none;
           }
         }
 
@@ -1011,34 +744,27 @@ export default function Contact() {
             min-height: 60vh;
             padding-top: 60px;
           }
-
           .contact-premium__hero-title {
             font-size: 1.5rem;
           }
-
           .contact-premium__hero-desc {
             font-size: 0.85rem;
           }
-
           .contact-premium__hero-btn {
             width: 100%;
             justify-content: center;
           }
-
           .contact-premium__form-wrapper {
             padding: 1rem;
           }
-
           .contact-premium__info-card {
             padding: 1rem;
           }
-
           .contact-premium__hours-item {
             flex-direction: column;
             align-items: flex-start;
             gap: 0.2rem;
           }
-
           .contact-premium__hero-tag {
             font-size: 0.6rem;
             padding: 0.3rem 1rem;

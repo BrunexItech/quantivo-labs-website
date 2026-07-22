@@ -131,25 +131,19 @@ export default function Partners() {
 
   return (
     <div className="partners-reimagined">
-      {/* ===== HERO - COMPLETELY NEW DESIGN ===== */}
+      {/* ===== HERO - WITH IMAGE ===== */}
       <section className="partners-reimagined__hero">
-        <div className="partners-reimagined__hero-bg">
-          <div className="partners-reimagined__hero-pattern" />
-          <div className="partners-reimagined__hero-shapes">
-            <div className="partners-reimagined__hero-shape partners-reimagined__hero-shape--1" />
-            <div className="partners-reimagined__hero-shape partners-reimagined__hero-shape--2" />
-            <div className="partners-reimagined__hero-shape partners-reimagined__hero-shape--3" />
-            <div className="partners-reimagined__hero-shape partners-reimagined__hero-shape--4" />
-          </div>
+        <div className="partners-reimagined__hero-image">
+          <img 
+            src="/partners_hero.webp"
+            alt="Partners Hero"
+            className="partners-reimagined__hero-img"
+          />
+          <div className="partners-reimagined__hero-overlay" />
         </div>
         
         <div className="partners-reimagined__hero-content">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="partners-reimagined__hero-inner"
-          >
+          <div className="partners-reimagined__hero-inner">
             <div className="partners-reimagined__hero-tag">
               <Crown size={16} />
               <span>Partner Ecosystem</span>
@@ -189,7 +183,7 @@ export default function Partners() {
                 Talk to Partner Team
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -417,7 +411,7 @@ export default function Partners() {
         }
 
         /* ================================================================
-           HERO - COMPLETELY NEW
+           HERO - WITH IMAGE
            ================================================================ */
 
         .partners-reimagined__hero {
@@ -426,78 +420,25 @@ export default function Partners() {
           display: flex;
           align-items: center;
           overflow: hidden;
-          background: #0F172A;
         }
 
-        .partners-reimagined__hero-bg {
+        .partners-reimagined__hero-image {
           position: absolute;
           inset: 0;
-          pointer-events: none;
+          z-index: 0;
         }
 
-        .partners-reimagined__hero-pattern {
+        .partners-reimagined__hero-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .partners-reimagined__hero-overlay {
           position: absolute;
           inset: 0;
-          background-image: 
-            radial-gradient(circle at 20% 50%, rgba(37, 99, 235, 0.06) 0%, transparent 50%),
-            radial-gradient(circle at 80% 50%, rgba(245, 158, 11, 0.04) 0%, transparent 50%);
-        }
-
-        .partners-reimagined__hero-shapes {
-          position: absolute;
-          inset: 0;
-          overflow: hidden;
-        }
-
-        .partners-reimagined__hero-shape {
-          position: absolute;
-          border-radius: 50%;
-          border: 1px solid rgba(255, 255, 255, 0.04);
-          animation: heroShapeFloat 25s ease-in-out infinite;
-        }
-
-        .partners-reimagined__hero-shape--1 {
-          width: 400px;
-          height: 400px;
-          top: -100px;
-          right: -80px;
-          border-color: rgba(37, 99, 235, 0.06);
-          animation-delay: 0s;
-        }
-
-        .partners-reimagined__hero-shape--2 {
-          width: 300px;
-          height: 300px;
-          bottom: -80px;
-          left: -60px;
-          border-color: rgba(245, 158, 11, 0.05);
-          animation-delay: 5s;
-          animation-direction: reverse;
-        }
-
-        .partners-reimagined__hero-shape--3 {
-          width: 200px;
-          height: 200px;
-          top: 30%;
-          right: 20%;
-          border-color: rgba(124, 58, 237, 0.04);
-          animation-delay: 10s;
-        }
-
-        .partners-reimagined__hero-shape--4 {
-          width: 150px;
-          height: 150px;
-          bottom: 30%;
-          left: 20%;
-          border-color: rgba(6, 182, 212, 0.04);
-          animation-delay: 15s;
-          animation-direction: reverse;
-        }
-
-        @keyframes heroShapeFloat {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          33% { transform: translate(30px, -20px) rotate(5deg); }
-          66% { transform: translate(-20px, 30px) rotate(-5deg); }
+          background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.7) 100%);
+          z-index: 1;
         }
 
         .partners-reimagined__hero-content {

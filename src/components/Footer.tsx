@@ -138,7 +138,7 @@ export default function Footer() {
                 <li>
                   <div className="footer-modern__contact-item">
                     <MapPin size={15} className="footer-modern__contact-icon" />
-                    <span>CPF Building, Mama Ngina Street, Opposite City Hall Annex, 5th Floor, Nairobi, Kenya</span>
+                    <span>Madona House, Mpaka Road, CBD, Nairobi, Kenya</span>
                   </div>
                 </li>
                 <li>
@@ -148,15 +148,21 @@ export default function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="tel:+254726339982" className="footer-modern__contact-link">
+                  <a href="tel:+254715274418" className="footer-modern__contact-link">
                     <Phone size={15} className="footer-modern__contact-icon" />
-                    <span>+254 726 339 982</span>
+                    <span>+254 715 274 418</span>
                   </a>
                 </li>
                 <li>
-                  <a href="tel:+254726157375" className="footer-modern__contact-link">
+                  <a href="tel:+254794913318" className="footer-modern__contact-link">
                     <Phone size={15} className="footer-modern__contact-icon" />
-                    <span>+254 726 157 375</span>
+                    <span>+254 794 913 318</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+254726339982" className="footer-modern__contact-link">
+                    <Phone size={15} className="footer-modern__contact-icon" />
+                    <span>+254 726 339 982</span>
                   </a>
                 </li>
                 <li>
